@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaVest - Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            background-color: #1a237e;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #1a237e;
+            color: white;
+        }
+        .btn-approve {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-reject {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .empty-msg {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>NovaVest Admin Panel</h1>
+        <p>Manage user withdrawal requests here.</p>
+    </header>
+
+    <div class="container">
+        <h2>Pending Withdrawals</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Amount (₦)</th>
+                    <th>Bank Name</th>
+                    <th>Account Number</th>
+                    <th>Account Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="requestTableBody">
+                <!-- JavaScript will put the requests here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Function to load and show requests
+        function loadRequests() {
+            let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
+            let tableBody = document.getElementById('requestTableBody');
+            tableBody.innerHTML = ''; // Clear old list
+
+            if (requests.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="empty-msg">No pending withdrawals right now.</td></tr>';
+                return;
+            }
+
+            requests.forEach(function(request, index) {
+                let row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>₦${request.amount.toFixed(2)}</td>
+                    <td>${request.bank}</td>
+                    <td>${request.accNum}</td>
+                    <td>${request.accName}</td>
+                    <td>
+                        <button class="btn-approve" onclick="approveRequest(${index})">Approve</button>
+                        <button class="btn-reject" onclick="rejectRequest(${index})">Reject</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to approve (which just removes it from the list since you'll pay them manually via your bank)
+        function approveRequest(index) {
+            let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
+            if (confirm("Have you successfully sent the money to the user's bank account?")) {
+                requests.splice(index, 1); // Remove from list
+                localStorage.setItem('novavestRequests', JSON.stringify(requests));
+                loadRequests(); // Refresh the table
+                alert("Withdrawal approved and removed from the list.");
+            }
+        }
+
+        // Function to reject (gives the money back to the user's app balance)
+        function rejectRequest(index) {
+            let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
+            if (confirm("Are you sure you want to reject this? The money will be returned to the user's app balance.")) {
+                // Get the user's current balance
+                let currentBalance = parseFloat(localStorage.getItem('novavestBalance')) || 0;
+                
+                // Add the money back
+                currentBalance += requests[index].amount;
+                localStorage.setItem('novavestBalance', currentBalance);
+
+                // Remove the request from the list
+                requests.splice(index, 1);
+                localStorage.setItem('novavestRequests', JSON.stringify(requests));
+                
+                loadRequests(); // Refresh the table
+                alert("Withdrawal rejected. Money returned to user balance.");
+            }
+        }
+
+        // Load the requests as soon as the page opens
+        loadRequests();
+    </script>
+
+</body>
+</html>
