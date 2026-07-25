@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaVest - Watch & Earn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        header {
+            background-color: #1a237e;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .ad-box {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        /* This styles the video player */
+        .video-player {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            background: #000;
+        }
+        .timer {
+            font-size: 40px;
+            font-weight: bold;
+            color: #1a237e;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #ffca28;
+            color: #1a237e;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+        .btn:disabled {
+            background-color: #ccc;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #1a237e;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Watch & Earn</h1>
+    </header>
+
+    <div class="ad-box">
+        <!-- This is the real video player -->
+        <video class="video-player" controls autoplay muted>
+            <!-- It is looking for a video called promo1.mp4 inside the videos folder -->
+            <source src="videos/promo1.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <p>Please wait for the timer to finish to claim your reward.</p>
+        
+        <div class="timer" id="timerDisplay">10</div>
+        
+        <button id="claimBtn" class="btn" disabled>Claim ₦50</button>
+        
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <script>
+        // Set the starting time (10 seconds)
+        let timeLeft = 10;
+        let timerDisplay = document.getElementById('timerDisplay');
+        let claimBtn = document.getElementById('claimBtn');
+
+        // Create the countdown
+        let countdown = setInterval(function() {
+            timeLeft--;
+            timerDisplay.innerText = timeLeft;
+
+            if (timeLeft <= 0) {
+                // Stop the timer
+                clearInterval(countdown);
+                timerDisplay.innerText = "Done!";
+                
+                // Unlock the button
+                claimBtn.disabled = false;
+                claimBtn.style.backgroundColor = '#4caf50';
+                claimBtn.style.color = 'white';
+            }
+        }, 1000); // 1000 milliseconds = 1 second
+
+        // When they click the claim button
+        claimBtn.addEventListener('click', function() {
+            // 1. Get current balance and add 50
+            let currentBalance = parseFloat(localStorage.getItem('novavestBalance')) || 0;
+            currentBalance += 50;
+            localStorage.setItem('novavestBalance', currentBalance);
+
+            // 2. Show success message
+            alert("Success! You earned ₦50.00");
+
+            // 3. Go back to dashboard
+            window.location.href = "dashboard.html";
+        });
+    </script>
+
+</body>
+</html>
