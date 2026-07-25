@@ -5,79 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Watch & Earn</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-        header {
-            background-color: #1a237e;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-        .ad-box {
-            max-width: 500px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        /* This styles the video player */
-        .video-player {
-            width: 100%;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            background: #000;
-        }
-        .timer {
-            font-size: 40px;
-            font-weight: bold;
-            color: #1a237e;
-            margin-bottom: 20px;
-        }
-        .btn {
-            background-color: #ffca28;
-            color: #1a237e;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-        }
-        .btn:disabled {
-            background-color: #ccc;
-            color: #888;
-            cursor: not-allowed;
-        }
-        .back-link {
-            display: block;
-            margin-top: 20px;
-            color: #1a237e;
-            text-decoration: none;
-        }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; margin: 0; padding: 20px; text-align: center; }
+        header { background-color: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { font-size: 24px; font-weight: 800; color: #00a86b; }
+        .ad-box { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; }
+        .video-placeholder { background-color: #e6f7ef; color: #007a4d; height: 200px; display: flex; align-items: center; justify-content: center; border-radius: 10px; margin-bottom: 20px; font-size: 20px; font-weight: bold; }
+        .timer { font-size: 40px; font-weight: 800; color: #00a86b; margin-bottom: 20px; }
+        .btn { background-color: #00a86b; color: white; padding: 12px 25px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 16px; text-decoration: none; transition: 0.2s; }
+        .btn:disabled { background-color: #ccc; color: #888; cursor: not-allowed; }
+        .btn:hover:not(:disabled) { background-color: #007a4d; }
+        .back-link { display: block; margin-top: 20px; color: #00a86b; text-decoration: none; font-weight: 600; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Watch & Earn</h1>
+        <div class="logo">NovaVest</div>
     </header>
 
     <div class="ad-box">
-        <!-- This is the real video player -->
-        <video class="video-player" controls autoplay muted>
-            <!-- It is looking for a video called promo1.mp4 inside the videos folder -->
-            <source src="videos/promo1.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <div class="video-placeholder">
+            🎬 Promotional Video Playing...
+        </div>
 
         <p>Please wait for the timer to finish to claim your reward.</p>
         
@@ -89,39 +38,38 @@
     </div>
 
     <script>
-        // Set the starting time (10 seconds)
+        // 1. SECURITY CHECK: Make sure the user has paid
+        let isActivated = localStorage.getItem('novavestTier');
+        if(!isActivated) {
+            alert("Access Denied! Please activate your account by making a payment first.");
+            window.location.href = "payment.html"; // Send them to pay
+        }
+
+        // 2. Countdown Timer Logic
         let timeLeft = 10;
         let timerDisplay = document.getElementById('timerDisplay');
         let claimBtn = document.getElementById('claimBtn');
 
-        // Create the countdown
         let countdown = setInterval(function() {
             timeLeft--;
             timerDisplay.innerText = timeLeft;
 
             if (timeLeft <= 0) {
-                // Stop the timer
                 clearInterval(countdown);
                 timerDisplay.innerText = "Done!";
                 
-                // Unlock the button
                 claimBtn.disabled = false;
-                claimBtn.style.backgroundColor = '#4caf50';
-                claimBtn.style.color = 'white';
+                claimBtn.style.backgroundColor = '#00a86b';
             }
-        }, 1000); // 1000 milliseconds = 1 second
+        }, 1000);
 
-        // When they click the claim button
+        // 3. Add money to balance when claimed
         claimBtn.addEventListener('click', function() {
-            // 1. Get current balance and add 50
             let currentBalance = parseFloat(localStorage.getItem('novavestBalance')) || 0;
             currentBalance += 50;
             localStorage.setItem('novavestBalance', currentBalance);
 
-            // 2. Show success message
             alert("Success! You earned ₦50.00");
-
-            // 3. Go back to dashboard
             window.location.href = "dashboard.html";
         });
     </script>
