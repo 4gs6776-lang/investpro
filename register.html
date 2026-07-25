@@ -5,36 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Register</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; margin: 0; padding: 20px; }
-        header { background-color: #1a237e; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
-        .form-container { max-width: 400px; margin: 40px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #1a237e; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .btn { width: 100%; background-color: #ffca28; color: #1a237e; padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .btn:hover { background-color: #e6b800; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; margin: 0; padding: 20px; }
+        header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 32px; font-weight: 800; color: #00a86b; }
+        .form-container { max-width: 420px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; }
+        h2 { text-align: center; color: #1a1a1a; margin-top: 0; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: 0.2s; }
+        input:focus { border-color: #00a86b; outline: none; box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.1); }
+        .btn { width: 100%; background-color: #00a86b; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        .btn:hover { background-color: #007a4d; }
+        .login-link { text-align: center; margin-top: 15px; font-size: 14px; color: #666; }
+        .login-link a { color: #00a86b; font-weight: 700; text-decoration: none; }
     </style>
 </head>
 <body>
-    <header><h1>NovaVest</h1></header>
+    <header>
+        <div class="logo">NovaVest</div>
+    </header>
     <div class="form-container">
-        <h2>Create Your Free Account</h2>
+        <h2>Create Your Account</h2>
         <form id="registerForm">
             <div class="form-group">
-                <label for="fullname">Full Name:</label>
-                <input type="text" id="fullname" placeholder="Enter your full name" required>
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" placeholder="e.g. John Doe" required>
             </div>
             <div class="form-group">
-                <label for="email">Email Address:</label>
-                <input type="email" id="email" placeholder="Enter your email" required>
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="e.g. john@example.com" required>
             </div>
             <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" placeholder="Create a password" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Create a strong password" required>
             </div>
             <button type="submit" class="btn">Create Account</button>
         </form>
+        <div class="login-link">Already have an account? <a href="login.html">Login here</a></div>
     </div>
     <script>
         document.getElementById('registerForm').addEventListener('submit', function(e) {
