@@ -5,94 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Complete Payment</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-        header {
-            background-color: #1a237e;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .container {
-            max-width: 450px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .amount-box {
-            background: #e8eaf6;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .amount-box h2 { margin: 0; color: #1a237e; }
-        .bank-details {
-            border: 2px dashed #1a237e;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; color: #333; margin: 0; padding: 20px; text-align: center; }
+        header { background-color: #1a237e; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
+        .container { max-width: 450px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .amount-box { background: #e8eaf6; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        select { padding: 10px; font-size: 16px; width: 100%; margin-bottom: 10px; box-sizing: border-box; }
+        .bank-details { border: 2px dashed #1a237e; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: left; }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .detail-row:last-child { margin-bottom: 0; }
         .detail-label { font-weight: bold; }
-        .copy-btn {
-            background: #ffca28;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #1a237e;
-        }
-        .timer-box {
-            font-size: 28px;
-            font-weight: bold;
-            color: #f44336;
-            margin-bottom: 20px;
-        }
-        .btn-confirm {
-            width: 100%;
-            background-color: #4caf50;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .btn-confirm:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+        .copy-btn { background: #ffca28; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; color: #1a237e; }
+        .timer-box { font-size: 28px; font-weight: bold; color: #f44336; margin-bottom: 20px; }
+        .btn-confirm { width: 100%; background-color: #4caf50; color: white; padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn-confirm:disabled { background-color: #ccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Complete Your Registration</h1>
+        <h1>Activate Your Account</h1>
     </header>
 
     <div class="container">
+        
+        <p>Select a registration tier to activate your account:</p>
+        <select id="tierSelect" onchange="updateAmount()">
+            <option value="500">₦500 Tier</option>
+            <option value="1000">₦1,000 Tier</option>
+            <option value="1500">₦1,500 Tier</option>
+            <option value="2000">₦2,000 Tier</option>
+            <option value="2500">₦2,500 Tier</option>
+            <option value="3000">₦3,000 Tier</option>
+            <option value="3500">₦3,500 Tier</option>
+            <option value="4000">₦4,000 Tier</option>
+            <option value="4500">₦4,500 Tier</option>
+            <option value="5000">₦5,000 Tier</option>
+            <option value="6000">₦6,000 Tier</option>
+            <option value="7000">₦7,000 Tier</option>
+            <option value="8000">₦8,000 Tier</option>
+            <option value="9000">₦9,000 Tier</option>
+            <option value="10000">₦10,000 Tier</option>
+        </select>
+
         <div class="amount-box">
-            <p>You selected the:</p>
-            <h2 id="amountToPay">₦0</h2>
-            <p>Tier</p>
+            <p>Amount to Pay:</p>
+            <h2 id="amountToPay">₦500</h2>
         </div>
 
         <p>Please transfer the exact amount to the bank account below:</p>
@@ -121,53 +78,50 @@
         <p style="font-size: 12px; color: #666; margin-top: 15px;">
             * Clicking the button above will notify the admin. Your account will be fully activated after your payment is verified.
         </p>
+        <a href="dashboard.html" style="display:block; margin-top:15px; color:#1a237e; text-decoration:none;">← Back to Dashboard</a>
     </div>
 
     <script>
-        // 1. Show the amount they selected on the register page
-        let tier = localStorage.getItem('novavestTier') || '500';
-        document.getElementById('amountToPay').innerText = '₦' + parseInt(tier).toLocaleString();
+        // 1. Update the amount based on dropdown
+        function updateAmount() {
+            let select = document.getElementById('tierSelect');
+            document.getElementById('amountToPay').innerText = '₦' + parseInt(select.value).toLocaleString();
+        }
+        updateAmount(); // Set initial amount
 
-        // 2. Set up the 30-minute countdown timer (30 minutes = 1800 seconds)
+        // 2. 30-minute countdown timer
         let timeLeft = 1800; 
         let timerDisplay = document.getElementById('countdown');
         let confirmBtn = document.getElementById('confirmBtn');
 
-        function startTimer() {
-            let countdownInterval = setInterval(function() {
-                timeLeft--;
-                
-                // Calculate minutes and seconds
-                let minutes = Math.floor(timeLeft / 60);
-                let seconds = timeLeft % 60;
-                
-                // Format so it always shows two digits (e.g., 09:05)
-                timerDisplay.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        let countdownInterval = setInterval(function() {
+            timeLeft--;
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            timerDisplay.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-                // When timer hits 0
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    timerDisplay.innerText = "Time Expired";
-                    timerDisplay.style.color = "#000";
-                    confirmBtn.disabled = true; // Lock the button
-                    alert("Time expired! Please go back to the registration page to start again.");
-                }
-            }, 1000); // Runs every 1 second
-        }
-        
-        // Start the timer immediately when page loads
-        startTimer();
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                timerDisplay.innerText = "Time Expired";
+                timerDisplay.style.color = "#000";
+                confirmBtn.disabled = true;
+                alert("Time expired! Please go back to the dashboard to start again.");
+            }
+        }, 1000);
 
-        // 3. Function to copy account number
+        // 3. Copy account number
         function copyAccount() {
             navigator.clipboard.writeText("6487126034");
             alert("Account number copied to clipboard!");
         }
 
-        // 4. Function when they click "I have made this payment"
+        // 4. Confirm payment
         function confirmPayment() {
-            alert("Thank you! Your payment is now pending admin verification. You can proceed to your dashboard for now.");
-            // Send them to the dashboard
+            // Save the tier they selected
+            let selectedTier = document.getElementById('tierSelect').value;
+            localStorage.setItem('novavestTier', selectedTier);
+            
+            alert("Thank you! Your payment is now pending admin verification. You can proceed to your dashboard.");
             window.location.href = "dashboard.html";
         }
     </script>
