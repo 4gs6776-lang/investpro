@@ -13,10 +13,21 @@
             color: #333;
         }
         header {
-            background-color: #1a237e; /* Deep Blue */
+            background-color: #1a237e;
             color: white;
             padding: 20px;
             text-align: center;
+        }
+        .top-nav {
+            margin-top: 15px;
+        }
+        .top-nav a {
+            color: #1a237e;
+            background-color: #ffca28;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
         }
         .container {
             max-width: 800px;
@@ -41,8 +52,8 @@
             text-align: center;
             font-weight: bold;
         }
-        .btn {
-            background-color: #ffca28; /* Gold */
+        .btn-main {
+            background-color: #ffca28;
             color: #1a237e;
             padding: 10px 20px;
             border: none;
@@ -50,6 +61,8 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
         }
     </style>
 </head>
@@ -58,6 +71,9 @@
     <header>
         <h1>Welcome to NovaVest</h1>
         <p>Digital Rewards & Financial Engagement</p>
+        <div class="top-nav">
+            <a href="login.html">Login</a>
+        </div>
     </header>
 
     <div class="container">
@@ -83,7 +99,7 @@
             <div class="tier">₦10,000</div>
         </div>
 
-      <a href="register.html"><button class="btn">Register Now</button></a>
+        <a href="register.html" class="btn-main">Register Now</a>
     </div>
 
 </body>
