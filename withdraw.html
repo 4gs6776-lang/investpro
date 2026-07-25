@@ -10,7 +10,7 @@
         .logo { font-size: 24px; font-weight: 800; color: #00a86b; }
         .form-container { max-width: 450px; margin: 0 auto; padding: 30px; background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; }
         h2 { color: #1a1a1a; text-align: center; margin-top: 0; }
-        .balance-display { text-align: center; font-size: 16px; margin-bottom: 20px; padding: 12px; background: #e6f7ef; border-radius: 8px; color: #007a4d; font-weight: bold; }
+        .balance-display { text-align: center; font-size: 16px; margin-bottom: 15px; padding: 12px; background: #e6f7ef; border-radius: 8px; color: #007a4d; font-weight: bold; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
@@ -33,12 +33,12 @@
             Available Balance: <span id="currentBalanceDisplay">₦0.00</span>
         </div>
 
-        <p style="font-size: 14px; color: #dc3545; text-align: center; margin-top: 0;">* Minimum withdrawal is ₦1,000</p>
+        <p style="font-size: 14px; color: #dc3545; text-align: center; margin-top: 0;" id="minWithdrawText">* Calculating minimum withdrawal...</p>
 
         <form id="withdrawForm">
             <div class="form-group">
                 <label for="amount">Amount to Withdraw (₦):</label>
-                <input type="number" id="amount" placeholder="e.g. 1000" required>
+                <input type="number" id="amount" placeholder="Enter amount" required>
             </div>
 
             <div class="form-group">
@@ -70,11 +70,18 @@
             window.location.href = "payment.html";
         }
 
-        // 2. Load balance
+        // 2. Get registration fee and calculate minimum withdrawal (2x the registration)
+        let registrationFee = parseFloat(isActivated) || 0;
+        let minWithdrawal = registrationFee * 2; 
+
+        // 3. Update the text on the page to show their exact minimum
+        document.getElementById('minWithdrawText').innerText = `* Minimum withdrawal for your plan is ₦${minWithdrawal.toLocaleString()}`;
+
+        // 4. Load balance
         let currentBalance = parseFloat(localStorage.getItem('novavestBalance')) || 0;
         document.getElementById('currentBalanceDisplay').innerText = '₦' + currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-        // 3. Handle form submission
+        // 5. Handle form submission
         document.getElementById('withdrawForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
 
@@ -85,8 +92,8 @@
 
             if (requestedAmount > currentBalance) {
                 alert("Error: You do not have enough balance for this withdrawal.");
-            } else if (requestedAmount < 1000) {
-                alert("Error: The minimum withdrawal amount is ₦1,000.");
+            } else if (requestedAmount < minWithdrawal) {
+                alert(`Error: The minimum withdrawal amount for your plan is ₦${minWithdrawal.toLocaleString()}.`);
             } else {
                 // Subtract balance
                 currentBalance -= requestedAmount;
