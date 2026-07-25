@@ -5,101 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Digital Rewards Platform</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f6;
-            color: #333;
-        }
-        header {
-            background-color: #1a237e;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        .top-nav {
-            margin-top: 15px;
-        }
-        .top-nav a {
-            color: #1a237e;
-            background-color: #ffca28;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .pricing-tiers {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .tier {
-            border: 2px solid #1a237e;
-            padding: 15px;
-            border-radius: 8px;
-            width: 120px;
-            text-align: center;
-            font-weight: bold;
-        }
-        .btn-main {
-            background-color: #ffca28;
-            color: #1a237e;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            text-decoration: none;
-            display: inline-block;
-        }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f4f8f6; color: #1a1a1a; }
+        header { background-color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { font-size: 24px; font-weight: 800; color: #00a86b; }
+        .nav-btns a { text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; margin-left: 10px; }
+        .btn-login { color: #00a86b; border: 2px solid #00a86b; }
+        .btn-register { background: #00a86b; color: white; }
+        
+        .hero { text-align: center; padding: 80px 20px; max-width: 800px; margin: 0 auto; }
+        .hero h1 { font-size: 42px; color: #1a1a1a; margin-bottom: 15px; }
+        .hero h1 span { color: #00a86b; }
+        .hero p { font-size: 18px; color: #666; line-height: 1.6; margin-bottom: 30px; }
+        .cta-btn { background: #00a86b; color: white; padding: 15px 40px; border: none; border-radius: 8px; font-size: 18px; font-weight: 700; text-decoration: none; transition: 0.2s; }
+        .cta-btn:hover { background: #007a4d; }
+        
+        .features { display: flex; justify-content: center; gap: 30px; padding: 40px; flex-wrap: wrap; }
+        .feature-box { background: white; padding: 30px; border-radius: 12px; width: 250px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 3px solid #00a86b; }
+        .feature-box h3 { color: #00a86b; }
+        .feature-box p { color: #666; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Welcome to NovaVest</h1>
-        <p>Digital Rewards & Financial Engagement</p>
-        <div class="top-nav">
-            <a href="login.html">Login</a>
+        <div class="logo">NovaVest</div>
+        <div class="nav-btns">
+            <a href="login.html" class="btn-login">Login</a>
+            <a href="register.html" class="btn-register">Get Started</a>
         </div>
     </header>
 
-    <div class="container">
-        <h2>Join NovaVest Today</h2>
-        <p>Create opportunities through innovative online activities. Choose a registration tier below to activate your account and start earning by watching ads and referring friends.</p>
+    <div class="hero">
+        <h1>Smart Investments, <span>Steady Growth</span></h1>
+        <p>NovaVest is a modern digital rewards platform designed to create opportunities through innovative online activities. Choose a plan, activate your account, and start earning daily rewards.</p>
+        <a href="register.html" class="cta-btn">Create Free Account</a>
+    </div>
 
-        <h3>Registration Tiers:</h3>
-        <div class="pricing-tiers">
-            <div class="tier">₦500</div>
-            <div class="tier">₦1,000</div>
-            <div class="tier">₦1,500</div>
-            <div class="tier">₦2,000</div>
-            <div class="tier">₦2,500</div>
-            <div class="tier">₦3,000</div>
-            <div class="tier">₦3,500</div>
-            <div class="tier">₦4,000</div>
-            <div class="tier">₦4,500</div>
-            <div class="tier">₦5,000</div>
-            <div class="tier">₦6,000</div>
-            <div class="tier">₦7,000</div>
-            <div class="tier">₦8,000</div>
-            <div class="tier">₦9,000</div>
-            <div class="tier">₦10,000</div>
+    <div class="features">
+        <div class="feature-box">
+            <h3>🔒 Bank-Level Security</h3>
+            <p>Your funds and data are protected with advanced encryption.</p>
         </div>
-
-        <a href="register.html" class="btn-main">Register Now</a>
+        <div class="feature-box">
+            <h3>⚡ Instant Withdrawals</h3>
+            <p>Request your earnings and get paid directly to your bank account.</p>
+        </div>
+        <div class="feature-box">
+            <h3>📈 Daily ROI</h3>
+            <p>Earn up to 12% daily ROI based on your investment plan.</p>
+        </div>
     </div>
 
 </body>
