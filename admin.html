@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Admin Panel</title>
     <style>
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; margin: 0; padding: 20px; color: #1a1a1a; }
-        header { background-color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; }
-        .logo { font-size: 24px; font-weight: 800; color: #00a86b; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h2 { margin-top: 0; color: #007a4d; border-left: 4px solid #00a86b; padding-left: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 15px; }
-        th { background-color: #00a86b; color: white; padding: 12px; text-align: left; border-radius: 8px 8px 0 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; padding: 20px; }
+        header { background-color: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .logo { font-size: 22px; font-weight: 800; color: #00a86b; }
+        .btn-logout { background-color: #dc3545; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; border: none; cursor: pointer; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: auto; }
+        h2 { margin-bottom: 15px; color: #007a4d; border-left: 4px solid #00a86b; padding-left: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 15px; min-width: 600px; }
+        th { background-color: #00a86b; color: white; padding: 12px; text-align: left; }
         td { border-bottom: 1px solid #eee; padding: 12px; }
         tr:hover { background-color: #f9fff9; }
         .btn-approve { background-color: #00a86b; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 13px; margin-right: 5px; }
@@ -22,7 +24,8 @@
 <body>
 
     <header>
-        <div class="logo">NovaVest Admin</div>
+        <div class="logo">NovaVest Admin Panel</div>
+        <button class="btn-logout" onclick="logoutAdmin()">Logout</button>
     </header>
 
     <div class="container">
@@ -44,11 +47,24 @@
     </div>
 
     <script>
-        // Load and show requests
+        // 1. SECURITY CHECK: Make sure admin is logged in
+        if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
+            alert("Access Denied! Please login as Admin.");
+            window.location.href = "admin-login.html";
+        }
+
+        // 2. Logout function
+        function logoutAdmin() {
+            localStorage.removeItem('isAdminLoggedIn');
+            alert("You have been logged out.");
+            window.location.href = "admin-login.html";
+        }
+
+        // 3. Load and show requests
         function loadRequests() {
             let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
             let tableBody = document.getElementById('requestTableBody');
-            tableBody.innerHTML = ''; // Clear old list
+            tableBody.innerHTML = '';
 
             if (requests.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="5" class="empty-msg">No pending withdrawals right now.</td></tr>';
@@ -57,7 +73,6 @@
 
             requests.forEach(function(request, index) {
                 let row = document.createElement('tr');
-                
                 row.innerHTML = `
                     <td style="font-weight: 800; color: #007a4d;">₦${request.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                     <td>${request.bank}</td>
@@ -72,33 +87,28 @@
             });
         }
 
-        // Approve request (removes it from the list)
+        // 4. Approve request
         function approveRequest(index) {
             let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
             if (confirm("Have you successfully sent the money to the user's bank account?")) {
-                requests.splice(index, 1); // Remove from list
+                requests.splice(index, 1);
                 localStorage.setItem('novavestRequests', JSON.stringify(requests));
-                loadRequests(); // Refresh the table
+                loadRequests();
                 alert("Withdrawal approved and removed from the list.");
             }
         }
 
-        // Reject request (gives the money back to the user's app balance)
+        // 5. Reject request
         function rejectRequest(index) {
             let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
             if (confirm("Are you sure you want to reject this? The money will be returned to the user's app balance.")) {
-                // Get the user's current balance
                 let currentBalance = parseFloat(localStorage.getItem('novavestBalance')) || 0;
-                
-                // Add the money back
                 currentBalance += requests[index].amount;
                 localStorage.setItem('novavestBalance', currentBalance);
 
-                // Remove the request from the list
                 requests.splice(index, 1);
                 localStorage.setItem('novavestRequests', JSON.stringify(requests));
-                
-                loadRequests(); // Refresh the table
+                loadRequests();
                 alert("Withdrawal rejected. Money returned to user balance.");
             }
         }
