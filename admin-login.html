@@ -20,11 +20,9 @@
     </style>
 </head>
 <body>
-
     <div class="form-container">
         <div class="logo">NovaVest Admin</div>
         <h2>Authorized Personnel Only</h2>
-        
         <form id="adminLoginForm">
             <div class="form-group">
                 <label for="adminId">Admin Email</label>
@@ -36,23 +34,16 @@
             </div>
             <button type="submit" class="btn">Secure Login</button>
         </form>
-        
         <a href="index.html" class="back-link">← Back to Homepage</a>
     </div>
-
     <script>
         document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
             let enteredId = document.getElementById('adminId').value;
             let enteredPass = document.getElementById('adminPass').value;
-            
-            // Your personal Admin Login Details
             let correctId = "goodnews@gmail.com";
             let correctPass = "NovaVest123";
-            
             if (enteredId === correctId && enteredPass === correctPass) {
-                // Save that admin is logged in
                 localStorage.setItem('isAdminLoggedIn', 'true');
                 alert("Login successful! Welcome, Admin.");
                 window.location.href = "admin.html";
@@ -61,6 +52,5 @@
             }
         });
     </script>
-
 </body>
 </html>
