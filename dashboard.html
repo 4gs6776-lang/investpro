@@ -133,23 +133,34 @@
     </div>
 
     <!-- Here is the code that makes the button work! -->
-    <script>
-        // This sets up our starting balance at 0
-        let currentBalance = 0; 
+       <script>
+        // 1. Check if the user already has a saved balance. If not, start at 0.
+        let currentBalance = parseFloat(localStorage.getItem('novavestBalance')) || 0;
         
-        // This finds the button and the balance text on your page
+        // 2. Find the button and the balance text on your page
         const watchAdBtn = document.getElementById('watchAdBtn');
         const mainBalance = document.getElementById('mainBalance');
         
-        // When the user clicks "Watch Ads", this code runs
+        // 3. Create a function to update the screen
+        function updateScreen() {
+            mainBalance.innerText = '₦' + currentBalance.toFixed(2);
+        }
+
+        // 4. Show the saved balance immediately when the page loads
+        updateScreen();
+        
+        // 5. When the user clicks "Watch Ads", this code runs
         watchAdBtn.addEventListener('click', function() {
-            // 1. Add 50 Naira to the balance
+            // Add 50 Naira
             currentBalance += 50; 
             
-            // 2. Update the text on the screen
-            mainBalance.innerText = '₦' + currentBalance.toFixed(2);
+            // Save the new balance to the browser's memory
+            localStorage.setItem('novavestBalance', currentBalance);
             
-            // 3. Pop up a message to the user
+            // Update the text on the screen
+            updateScreen();
+            
+            // Pop up a message to the user
             alert('Ad watched successfully! You earned ₦50.00');
         });
     </script>
