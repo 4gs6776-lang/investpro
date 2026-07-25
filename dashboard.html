@@ -5,91 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Dashboard</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f2f5;
-        }
-        header {
-            background-color: #1a237e;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .balance-card {
-            background: linear-gradient(135deg, #1a237e, #3949ab);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .balance-label {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-        .balance-amount {
-            font-size: 40px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .card {
-            background: white;
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f2f5; }
+        header { background-color: #1a237e; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: bold; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        
+        /* Activation Banner */
+        .activation-banner {
+            background: #fff3cd;
+            border: 2px solid #ffeeba;
+            color: #856404;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             text-align: center;
+            margin-bottom: 20px;
         }
-        .card h3 {
-            color: #1a237e;
-            margin-top: 0;
-        }
-        .btn {
-            background-color: #ffca28;
-            color: #1a237e;
-            padding: 10px 15px;
+        .btn-activate {
+            background-color: #ff9800;
+            color: white;
+            padding: 10px 20px;
             border: none;
             border-radius: 5px;
             font-weight: bold;
-            cursor: pointer;
-            width: 100%;
+            text-decoration: none;
+            display: inline-block;
             margin-top: 10px;
         }
-        .referral-box {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .referral-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px dashed #1a237e;
-            border-radius: 5px;
-            text-align: center;
-            color: #555;
-            background: #f9f9f9;
-        }
+
+        .balance-card { background: linear-gradient(135deg, #1a237e, #3949ab); color: white; padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .balance-label { font-size: 16px; opacity: 0.9; }
+        .balance-amount { font-size: 40px; font-weight: bold; margin-top: 10px; }
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+        .card h3 { color: #1a237e; margin-top: 0; }
+        .btn { background-color: #ffca28; color: #1a237e; padding: 10px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; text-decoration: none; display: inline-block; box-sizing: border-box; }
+        .btn:disabled { background-color: #ccc; color: #888; cursor: not-allowed; }
+        .referral-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .referral-input { width: 100%; padding: 10px; border: 1px dashed #1a237e; border-radius: 5px; text-align: center; color: #555; background: #f9f9f9; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -101,67 +53,50 @@
 
     <div class="container">
         
-        <!-- Main Balance -->
+        <!-- Activation Banner -->
+        <div class="activation-banner">
+            <h3>⚠️ Account Not Activated</h3>
+            <p>You must activate your account by paying a registration fee to start earning.</p>
+            <a href="payment.html" class="btn-activate">Activate Account Now</a>
+        </div>
+
         <div class="balance-card">
             <div class="balance-label">Main Balance</div>
-            <!-- We added an id="mainBalance" here so the code can update it -->
             <div class="balance-amount" id="mainBalance">₦0.00</div>
         </div>
 
-        <!-- Actions -->
         <div class="actions">
             <div class="card">
                 <h3>Watch & Earn</h3>
                 <p>Earn by watching promotional videos.</p>
-                <!-- We added an id="watchAdBtn" here -->
-                <button class="btn" id="watchAdBtn">Watch Ads</button>
+                <!-- Locked button -->
+                <button class="btn" id="watchAdBtn" disabled>Watch Ads (Locked)</button>
             </div>
             <div class="card">
                 <h3>Withdraw Funds</h3>
                 <p>Min withdrawal depends on your tier.</p>
-                <button class="btn">Request Withdrawal</button>
+                <a href="withdraw.html" class="btn">Request Withdrawal</a>
             </div>
         </div>
 
-        <!-- Referral Link -->
         <div class="referral-box">
             <h3 style="color:#1a237e; margin-top:0;">Your Referral Link</h3>
             <p style="font-size: 14px; color: #666;">Share this link with friends. When they register, you earn money!</p>
             <input type="text" class="referral-input" value="https://novavest.com/register?ref=USER123" readonly>
         </div>
-
     </div>
 
-    <!-- Here is the code that makes the button work! -->
-       <script>
-        // 1. Check if the user already has a saved balance. If not, start at 0.
+    <script>
         let currentBalance = parseFloat(localStorage.getItem('novavestBalance')) || 0;
-        
-        // 2. Find the button and the balance text on your page
-        const watchAdBtn = document.getElementById('watchAdBtn');
         const mainBalance = document.getElementById('mainBalance');
-        
-        // 3. Create a function to update the screen
         function updateScreen() {
             mainBalance.innerText = '₦' + currentBalance.toFixed(2);
         }
-
-        // 4. Show the saved balance immediately when the page loads
         updateScreen();
-        
-        // 5. When the user clicks "Watch Ads", this code runs
-        watchAdBtn.addEventListener('click', function() {
-            // Add 50 Naira
-            currentBalance += 50; 
-            
-            // Save the new balance to the browser's memory
-            localStorage.setItem('novavestBalance', currentBalance);
-            
-            // Update the text on the screen
-            updateScreen();
-            
-            // Pop up a message to the user
-            alert('Ad watched successfully! You earned ₦50.00');
+
+        // If they try to click the locked button
+        document.getElementById('watchAdBtn').addEventListener('click', function() {
+            alert("Please activate your account by making a payment first.");
         });
     </script>
 
