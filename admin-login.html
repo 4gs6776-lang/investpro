@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaVest - Admin Login</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .form-container { max-width: 400px; width: 100%; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; }
+        .logo { text-align: center; font-size: 28px; font-weight: 800; color: #00a86b; margin-bottom: 10px; }
+        h2 { text-align: center; color: #1a1a1a; margin-bottom: 20px; font-size: 20px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; transition: 0.2s; }
+        input:focus { border-color: #00a86b; outline: none; box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.1); }
+        .btn { width: 100%; background-color: #00a86b; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        .btn:hover { background-color: #007a4d; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #666; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <div class="logo">NovaVest Admin</div>
+        <h2>Authorized Personnel Only</h2>
+        
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label for="adminId">Admin Username</label>
+                <input type="text" id="adminId" placeholder="Enter admin username" required>
+            </div>
+            <div class="form-group">
+                <label for="adminPass">Password</label>
+                <input type="password" id="adminPass" placeholder="Enter admin password" required>
+            </div>
+            <button type="submit" class="btn">Secure Login</button>
+        </form>
+        
+        <a href="index.html" class="back-link">← Back to Homepage</a>
+    </div>
+
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let enteredId = document.getElementById('adminId').value;
+            let enteredPass = document.getElementById('adminPass').value;
+            
+            // Your personal Admin Login Details
+            let correctId = "Goodnews";
+            let correctPass = "NovaVest123";
+            
+            if (enteredId === correctId && enteredPass === correctPass) {
+                // Save that admin is logged in
+                localStorage.setItem('isAdminLoggedIn', 'true');
+                alert("Login successful! Welcome, Admin.");
+                window.location.href = "admin.html";
+            } else {
+                alert("Access Denied! Invalid admin credentials.");
+            }
+        });
+    </script>
+
+</body>
+</html>
