@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaVest - Withdraw</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            background-color: #1a237e;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-container {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h2 { color: #1a237e; text-align: center; }
+        .balance-display {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #e8eaf6;
+            border-radius: 5px;
+        }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .btn {
+            width: 100%;
+            background-color: #ffca28;
+            color: #1a237e;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover { background-color: #e6b800; }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #1a237e;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>NovaVest</h1>
+    </header>
+
+    <div class="form-container">
+        <h2>Request Withdrawal</h2>
+        
+        <div class="balance-display">
+            Available Balance: <strong id="currentBalanceDisplay">₦0.00</strong>
+        </div>
+
+        <p style="font-size: 14px; color: red; text-align: center;">* Minimum withdrawal is ₦1,000</p>
+
+        <form id="withdrawForm">
+            <div class="form-group">
+                <label for="amount">Amount to Withdraw (₦):</label>
+                <input type="number" id="amount" placeholder="e.g. 1000" required>
+            </div>
+
+            <div class="form-group">
+                <label for="bank">Bank Name:</label>
+                <input type="text" id="bank" placeholder="e.g. GTBank" required>
+            </div>
+
+            <div class="form-group">
+                <label for="accountNumber">Account Number:</label>
+                <input type="text" id="accountNumber" placeholder="Enter your 10-digit account number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="accountName">Account Name:</label>
+                <input type="text" id="accountName" placeholder="Enter your account name" required>
+            </div>
+
+            <button type="submit" class="btn">Submit Withdrawal Request</button>
+        </form>
+
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <script>
+        // Load the user's current balance
+        let currentBalance = parseFloat(localStorage.getItem('novavestBalance')) || 0;
+        document.getElementById('currentBalanceDisplay').innerText = '₦' + currentBalance.toFixed(2);
+
+        // Handle the form submission
+        document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Stop the page from reloading
+
+            let requestedAmount = parseFloat(document.getElementById('amount').value);
+            let bankName = document.getElementById('bank').value;
+            let accNum = document.getElementById('accountNumber').value;
+            let accName = document.getElementById('accountName').value;
+
+            // Check if they have enough money and meet the minimum
+            if (requestedAmount > currentBalance) {
+                alert("Error: You do not have enough balance for this withdrawal.");
+            } else if (requestedAmount < 1000) {
+                alert("Error: The minimum withdrawal amount is ₦1,000.");
+            } else {
+                // Subtract the withdrawn amount from their balance
+                currentBalance -= requestedAmount;
+                localStorage.setItem('novavestBalance', currentBalance);
+
+                // SAVE THE REQUEST FOR THE ADMIN TO SEE
+                let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
+                requests.push({
+                    amount: requestedAmount,
+                    bank: bankName,
+                    accNum: accNum,
+                    accName: accName,
+                    status: 'Pending'
+                });
+                localStorage.setItem('novavestRequests', JSON.stringify(requests));
+
+                // Show success message
+                alert("Success! Your withdrawal request of ₦" + requestedAmount + " is now PENDING admin approval.");
+
+                // Send them back to the dashboard
+                window.location.href = "dashboard.html";
+            }
+        });
+    </script>
+
+</body>
+</html>
