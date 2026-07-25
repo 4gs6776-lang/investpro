@@ -25,7 +25,7 @@
 
     <header>
         <div class="logo">NovaVest Admin Panel</div>
-        <button class="btn-logout" onclick="logoutAdmin()">Logout</button>
+        <a href="admin-login.html" class="btn-logout">Logout</a>
     </header>
 
     <div class="container">
@@ -47,20 +47,16 @@
     </div>
 
     <script>
-        // 1. SECURITY CHECK: Make sure admin is logged in
-        if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
+        // 1. SECURITY CHECK: Check URL for successful login
+        const urlParams = new URLSearchParams(window.location.search);
+        const isAuth = urlParams.get('auth');
+        
+        if (isAuth !== 'success') {
             alert("Access Denied! Please login as Admin.");
             window.location.href = "admin-login.html";
         }
 
-        // 2. Logout function
-        function logoutAdmin() {
-            localStorage.removeItem('isAdminLoggedIn');
-            alert("You have been logged out.");
-            window.location.href = "admin-login.html";
-        }
-
-        // 3. Load and show requests
+        // 2. Load and show requests
         function loadRequests() {
             let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
             let tableBody = document.getElementById('requestTableBody');
@@ -87,7 +83,7 @@
             });
         }
 
-        // 4. Approve request
+        // 3. Approve request
         function approveRequest(index) {
             let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
             if (confirm("Have you successfully sent the money to the user's bank account?")) {
@@ -98,7 +94,7 @@
             }
         }
 
-        // 5. Reject request
+        // 4. Reject request
         function rejectRequest(index) {
             let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
             if (confirm("Are you sure you want to reject this? The money will be returned to the user's app balance.")) {
