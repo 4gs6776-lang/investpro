@@ -98,23 +98,23 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn">Proceed to Payment</button>
+            <button type="submit" class="btn">Create Account</button>
         </form>
     </div>
 
     <script>
-        // When they click submit, save their chosen tier and go to payment page
+        // When they click create account, save their chosen tier and go straight to dashboard
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault(); // Stop normal form reloading
             
             // Get the tier they selected
             let selectedTier = document.getElementById('tier').value;
             
-            // Save it to the browser's memory so the payment page can see it
+            // Save it to the browser's memory so the dashboard and payment page can see it
             localStorage.setItem('novavestTier', selectedTier);
             
-            // Send them to the payment page
-            window.location.href = "payment.html";
+            // Send them straight to the dashboard
+            window.location.href = "dashboard.html";
         });
     </script>
 
