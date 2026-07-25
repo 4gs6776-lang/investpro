@@ -5,118 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Register</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        header {
-            background-color: #1a237e;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .form-container {
-            max-width: 400px;
-            margin: 40px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; margin: 0; padding: 20px; }
+        header { background-color: #1a237e; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .form-container { max-width: 400px; margin: 40px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: #1a237e; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .btn {
-            width: 100%;
-            background-color: #ffca28;
-            color: #1a237e;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-        }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .btn { width: 100%; background-color: #ffca28; color: #1a237e; padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px; }
         .btn:hover { background-color: #e6b800; }
     </style>
 </head>
 <body>
-
-    <header>
-        <h1>NovaVest</h1>
-    </header>
-
+    <header><h1>NovaVest</h1></header>
     <div class="form-container">
-        <h2>Create Your Account</h2>
+        <h2>Create Your Free Account</h2>
         <form id="registerForm">
             <div class="form-group">
                 <label for="fullname">Full Name:</label>
                 <input type="text" id="fullname" placeholder="Enter your full name" required>
             </div>
-            
             <div class="form-group">
                 <label for="email">Email Address:</label>
                 <input type="email" id="email" placeholder="Enter your email" required>
             </div>
-
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" placeholder="Create a password" required>
             </div>
-
-            <div class="form-group">
-                <label for="tier">Select Registration Tier:</label>
-                <select id="tier" required>
-                    <option value="">-- Select a Plan --</option>
-                    <option value="500">₦500</option>
-                    <option value="1000">₦1,000</option>
-                    <option value="1500">₦1,500</option>
-                    <option value="2000">₦2,000</option>
-                    <option value="2500">₦2,500</option>
-                    <option value="3000">₦3,000</option>
-                    <option value="3500">₦3,500</option>
-                    <option value="4000">₦4,000</option>
-                    <option value="4500">₦4,500</option>
-                    <option value="5000">₦5,000</option>
-                    <option value="6000">₦6,000</option>
-                    <option value="7000">₦7,000</option>
-                    <option value="8000">₦8,000</option>
-                    <option value="9000">₦9,000</option>
-                    <option value="10000">₦10,000</option>
-                </select>
-            </div>
-
             <button type="submit" class="btn">Create Account</button>
         </form>
     </div>
-
     <script>
-        // When they click create account, save their chosen tier and go straight to dashboard
         document.getElementById('registerForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Stop normal form reloading
-            
-            // Get the tier they selected
-            let selectedTier = document.getElementById('tier').value;
-            
-            // Save it to the browser's memory so the dashboard and payment page can see it
-            localStorage.setItem('novavestTier', selectedTier);
-            
-            // Send them straight to the dashboard
+            e.preventDefault(); 
+            let name = document.getElementById('fullname').value;
+            localStorage.setItem('novavestUser', name);
             window.location.href = "dashboard.html";
         });
     </script>
-
 </body>
 </html>
