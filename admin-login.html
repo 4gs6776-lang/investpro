@@ -36,17 +36,20 @@
         </form>
         <a href="index.html" class="back-link">← Back to Homepage</a>
     </div>
+
     <script>
         document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             let enteredId = document.getElementById('adminId').value;
             let enteredPass = document.getElementById('adminPass').value;
+            
             let correctId = "goodnews@gmail.com";
             let correctPass = "NovaVest123";
+            
             if (enteredId === correctId && enteredPass === correctPass) {
-                localStorage.setItem('isAdminLoggedIn', 'true');
                 alert("Login successful! Welcome, Admin.");
-                window.location.href = "admin.html";
+                // Using URL parameter to bypass mobile iframe restrictions
+                window.location.href = "admin.html?auth=success";
             } else {
                 alert("Access Denied! Invalid admin credentials.");
             }
