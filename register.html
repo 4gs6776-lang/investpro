@@ -43,46 +43,41 @@
         <div class="login-link">Already have an account? <a href="login.html">Login here</a></div>
     </div>
 
-    <!-- Firebase Connections (Realtime Database) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script>
-        // Your Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDnCejfQcvxQjcb3JESNPvZJpGgwbZy9bY",
             authDomain: "novavest-58ae5.firebaseapp.com",
+            databaseURL: "https://novavest-58ae5-default-rtdb.firebaseio.com/",
             projectId: "novavest-58ae5",
             storageBucket: "novavest-58ae5.firebasestorage.app",
             messagingSenderId: "596912273946",
-            appId: "1:596912273946:web:50fdb479fbc088a9392fa3",
-            databaseURL: "https://novavest-58ae5-default-rtdb.firebaseio.com/" 
+            appId: "1:596912273946:web:50fdb479fbc088a9392fa3"
         };
-
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Handle Registration
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
             
             let name = document.getElementById('fullname').value;
             let email = document.getElementById('email').value;
-            
-            // We remove dots from email to use it as an ID in the database
             let safeEmail = email.replace(/\./g, ',');
+
+            // Check URL to see if someone referred them
+            const urlParams = new URLSearchParams(window.location.search);
+            let referrer = urlParams.get('ref') || "None";
             
-            // Save user to Firebase Realtime Database
             db.ref('users/' + safeEmail).set({
                 fullname: name,
                 email: email,
                 balance: 0,
-                tier: "None"
+                tier: "None",
+                referredBy: referrer // Save the referrer!
             }).then(() => {
-                // Save to local phone storage so the app remembers them
                 localStorage.setItem('novavestUser', name);
                 localStorage.setItem('novavestEmail', email);
-                
                 alert("Account created successfully! Welcome to NovaVest.");
                 window.location.href = "dashboard.html";
             }).catch((error) => {
