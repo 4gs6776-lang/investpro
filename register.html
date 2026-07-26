@@ -43,7 +43,9 @@
         <div class="login-link">Already have an account? <a href="login.html">Login here</a></div>
     </div>
 
+    <!-- Firebase Connections -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script>
         const firebaseConfig = {
@@ -56,6 +58,7 @@
             appId: "1:596912273946:web:50fdb479fbc088a9392fa3"
         };
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.database();
 
         document.getElementById('registerForm').addEventListener('submit', function(e) {
@@ -63,24 +66,31 @@
             
             let name = document.getElementById('fullname').value;
             let email = document.getElementById('email').value;
+            let password = document.getElementById('password').value;
             let safeEmail = email.replace(/\./g, ',');
 
             // Check URL to see if someone referred them
             const urlParams = new URLSearchParams(window.location.search);
             let referrer = urlParams.get('ref') || "None";
             
-            db.ref('users/' + safeEmail).set({
-                fullname: name,
-                email: email,
-                balance: 0,
-                tier: "None",
-                referredBy: referrer // Save the referrer!
-            }).then(() => {
-                localStorage.setItem('novavestUser', name);
-                localStorage.setItem('novavestEmail', email);
-                alert("Account created successfully! Welcome to NovaVest.");
-                window.location.href = "dashboard.html";
-            }).catch((error) => {
+            // 1. Create user with Firebase Authentication
+            auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // 2. Save user data to Realtime Database
+                db.ref('users/' + safeEmail).set({
+                    fullname: name,
+                    email: email,
+                    balance: 0,
+                    tier: "None",
+                    referredBy: referrer
+                }).then(() => {
+                    localStorage.setItem('novavestUser', name);
+                    localStorage.setItem('novavestEmail', email);
+                    alert("Account created successfully! Welcome to NovaVest.");
+                    window.location.href = "dashboard.html";
+                });
+            })
+            .catch((error) => {
                 alert("Error: " + error.message);
             });
         });
