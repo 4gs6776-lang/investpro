@@ -68,7 +68,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. Load Pending Payments from Firebase
+        // 1. Load Pending Payments
         db.ref('users').on('value', function(snapshot) {
             let users = snapshot.val();
             let tableBody = document.getElementById('pendingPaymentsBody');
@@ -94,49 +94,85 @@
             }
         });
 
-        // 2. Approve Payment function (NOW ADDS MONEY TO BALANCE)
+        // Approve Payment
         function approvePayment(emailKey, tierAmount) {
-            if (confirm("Have you confirmed the money in your OPay account? Click OK to activate user and fund their wallet.")) {
-                
-                // Get the user's current balance first
+            if (confirm("Have you confirmed the money? Click OK to activate user and fund wallet.")) {
                 db.ref('users/' + emailKey).once('value').then(function(snapshot) {
                     let userData = snapshot.val();
                     let currentBalance = userData.balance || 0;
-                    
-                    // Add their investment to their balance
                     let newBalance = currentBalance + parseInt(tierAmount);
                     
-                    // Update the database with new balance, tier, and approved status
                     db.ref('users/' + emailKey).update({
                         tier: tierAmount,
                         paymentStatus: "Approved",
                         balance: newBalance
                     }).then(() => {
-                        alert("Success! User account is activated. ₦" + parseInt(tierAmount).toLocaleString() + " has been added to their Main Balance.");
+                        alert("Success! Account activated. Balance updated.");
                     });
                 });
             }
         }
 
-        // 3. Load Pending Withdrawals
-        function loadRequests() {
-            let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
+        // 2. Load Pending Withdrawals from Cloud
+        db.ref('withdrawals').on('value', function(snapshot) {
+            let withdrawals = snapshot.val();
             let tableBody = document.getElementById('requestTableBody');
             tableBody.innerHTML = '';
-            if (requests.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" class="empty-msg">No pending withdrawals right now.</td></tr>';
-                return;
-            }
-            requests.forEach(function(request, index) {
-                let row = document.createElement('tr');
-                row.innerHTML = `<td>₦${request.amount.toLocaleString()}</td><td>${request.bank}</td><td>${request.accNum}</td><td>${request.accName}</td><td><button class="btn-approve" onclick="approveRequest(${index})">Approve</button><button class="btn-reject" onclick="rejectRequest(${index})">Reject</button></td>`;
-                tableBody.appendChild(row);
-            });
-        }
-        function approveRequest(index) { let r = JSON.parse(localStorage.getItem('novavestRequests')) || []; if (confirm("Send money?")) { r.splice(index, 1); localStorage.setItem('novavestRequests', JSON.stringify(r)); loadRequests(); } }
-        function rejectRequest(index) { let r = JSON.parse(localStorage.getItem('novavestRequests')) || []; if (confirm("Reject?")) { let b = parseFloat(localStorage.getItem('novavestBalance')) || 0; b += r[index].amount; localStorage.setItem('novavestBalance', b); r.splice(index, 1); localStorage.setItem('novavestRequests', JSON.stringify(r)); loadRequests(); } }
+            let hasPending = false;
 
-        loadRequests();
+            for (let key in withdrawals) {
+                let req = withdrawals[key];
+                if (req.status === "Pending") {
+                    hasPending = true;
+                    let row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="font-weight: 800; color: #007a4d;">₦${req.amount.toLocaleString()}</td>
+                        <td>${req.bank}</td>
+                        <td>${req.accNum}</td>
+                        <td>${req.accName}</td>
+                        <td>
+                            <button class="btn-approve" onclick="approveWithdrawal('${key}')">Approve</button>
+                            <button class="btn-reject" onclick="rejectWithdrawal('${key}', '${req.userSafeEmail}', ${req.amount})">Reject</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+            }
+            if(!hasPending) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="empty-msg">No pending withdrawals right now.</td></tr>';
+            }
+        });
+
+        // Approve Withdrawal (Just delete it from cloud since money is already deducted from user)
+        function approveWithdrawal(reqKey) {
+            if (confirm("Have you sent the money to their bank account?")) {
+                db.ref('withdrawals/' + reqKey).remove().then(() => {
+                    alert("Withdrawal approved and removed from list.");
+                });
+            }
+        }
+
+        // Reject Withdrawal (Give money back to user in Cloud, then delete request)
+        function rejectWithdrawal(reqKey, userSafeEmail, amount) {
+            if (confirm("Reject this withdrawal? The money will be returned to the user's app balance.")) {
+                // Get user balance
+                db.ref('users/' + userSafeEmail).once('value').then(function(snapshot) {
+                    let userData = snapshot.val();
+                    let currentBalance = userData.balance || 0;
+                    let newBalance = currentBalance + amount;
+                    
+                    // Return money
+                    db.ref('users/' + userSafeEmail).update({
+                        balance: newBalance
+                    }).then(() => {
+                        // Delete request
+                        db.ref('withdrawals/' + reqKey).remove().then(() => {
+                            alert("Withdrawal rejected. Money returned to user.");
+                        });
+                    });
+                });
+            }
+        }
     </script>
 </body>
 </html>
