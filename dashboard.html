@@ -58,7 +58,6 @@
             <div class="bal-amount" id="mainBalance">₦0.00</div>
         </div>
 
-        <!-- This banner changes based on payment status -->
         <div class="alert-banner alert-yellow" id="activationBanner">
             <span>⚠️ Account Not Activated! Activate to unlock daily earnings.</span>
             <a href="payment.html" class="btn-activate-small">Activate Now</a>
@@ -78,8 +77,8 @@
             <div class="tx-item"><div class="tx-left"><div class="tx-icon bg-red">-</div><div><div class="tx-type">Withdrawal Requested</div><div class="tx-time">Yesterday, 02:15 PM</div></div></div><div class="tx-amount" style="color: var(--danger)">-₦10,000.00</div></div>
         </div>
         <div class="referral-module">
-            <div class="ref-text"><h4>Earn More, Grow Faster</h4><p>Invite friends and earn 5% commission on their investments!</p></div>
-            <div class="ref-box"><input type="text" value="https://novavest.com/r?ref=USER123" id="refLink" readonly><button class="btn-copy" onclick="copyRef()">Copy Link</button></div>
+            <div class="ref-text"><h4>Earn More, Grow Faster</h4><p>Invite friends and earn ₦500 when they activate their account!</p></div>
+            <div class="ref-box"><input type="text" value="Loading link..." id="refLink" readonly><button class="btn-copy" onclick="copyRef()">Copy Link</button></div>
         </div>
     </div>
 
@@ -108,12 +107,17 @@
                 let currentBalance = userData.balance || 0;
                 document.getElementById('mainBalance').innerText = '₦' + currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+                // Generate REAL Referral Link
+                let currentUrl = window.location.href;
+                let baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf("/")) + "/";
+                document.getElementById('refLink').value = baseUrl + "register.html?ref=" + safeEmail;
+
                 let banner = document.getElementById('activationBanner');
                 let isActivated = userData.tier && userData.tier !== "None";
                 let isPending = userData.paymentStatus === "Pending";
 
                 if(isActivated) {
-                    banner.style.display = 'none'; // Hide banner if fully activated
+                    banner.style.display = 'none'; 
                 } else if (isPending) {
                     banner.className = "alert-banner alert-blue";
                     banner.innerHTML = '<span>⏳ Payment Pending Verification! Please wait for Admin to confirm your payment.</span>';
