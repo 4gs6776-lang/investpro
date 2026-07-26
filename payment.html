@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Complete Payment</title>
     <style>
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; margin: 0; padding: 20px; text-align: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; padding: 20px; text-align: center; }
         header { text-align: center; margin-bottom: 20px; }
         .logo { font-size: 28px; font-weight: 800; color: #00a86b; }
         .container { max-width: 450px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; }
@@ -36,25 +37,19 @@
         <h2 style="margin-top:0;">Activate Your Account</h2>
         <p style="color:#666; margin-bottom: 20px;">Select an investment amount to activate your account and start earning daily ROI.</p>
 
-        <!-- Dropdown for all Naira Amounts -->
         <select id="tierSelect" onchange="updateAmount()">
-            <!-- Starter Plan (₦1,000 to ₦4,000) -->
             <optgroup label="Starter Plan (5% Daily)">
                 <option value="1000">₦1,000</option>
                 <option value="2000">₦2,000</option>
                 <option value="3000">₦3,000</option>
                 <option value="4000">₦4,000</option>
             </optgroup>
-            
-            <!-- Growth Plan (Starts from ₦5,000) -->
             <optgroup label="Growth Plan (8% Daily)">
                 <option value="5000">₦5,000</option>
                 <option value="10000">₦10,000</option>
                 <option value="15000">₦15,000</option>
                 <option value="20000">₦20,000</option>
             </optgroup>
-
-            <!-- VIP Plan -->
             <optgroup label="VIP Plan (12% Daily)">
                 <option value="50000">₦50,000 🏆</option>
             </optgroup>
@@ -89,15 +84,28 @@
         <a href="dashboard.html" style="display:block; margin-top:15px; color:#00a86b; text-decoration:none; font-weight:600;">← Back to Dashboard</a>
     </div>
 
+    <!-- Firebase Connection -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script>
-        // Update the amount based on dropdown
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnCejfQcvxQjcb3JESNPvZJpGgwbZy9bY",
+            authDomain: "novavest-58ae5.firebaseapp.com",
+            projectId: "novavest-58ae5",
+            storageBucket: "novavest-58ae5.firebasestorage.app",
+            messagingSenderId: "596912273946",
+            appId: "1:596912273946:web:50fdb479fbc088a9392fa3",
+            databaseURL: "https://novavest-58ae5-default-rtdb.firebaseio.com/" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         function updateAmount() {
             let select = document.getElementById('tierSelect');
             document.getElementById('amountToPay').innerText = '₦' + parseInt(select.value).toLocaleString();
         }
-        updateAmount(); // Set initial amount
+        updateAmount();
 
-        // 30-minute countdown timer
         let timeLeft = 1800; 
         let timerDisplay = document.getElementById('countdown');
         let confirmBtn = document.getElementById('confirmBtn');
@@ -124,9 +132,27 @@
 
         function confirmPayment() {
             let selectedAmount = document.getElementById('tierSelect').value;
-            localStorage.setItem('novavestTier', selectedAmount);
-            alert("Thank you! Your payment of ₦" + parseInt(selectedAmount).toLocaleString() + " is now pending admin verification. You can proceed to your dashboard.");
-            window.location.href = "dashboard.html";
+            
+            // Get the logged-in user's email
+            let userEmail = localStorage.getItem('novavestEmail');
+            
+            if(!userEmail) {
+                alert("Error: Please register or login first.");
+                window.location.href = "register.html";
+                return;
+            }
+
+            let safeEmail = userEmail.replace(/\./g, ',');
+            
+            // Update their tier in the Firebase Cloud!
+            db.ref('users/' + safeEmail).update({
+                tier: selectedAmount
+            }).then(() => {
+                alert("Thank you! Your payment of ₦" + parseInt(selectedAmount).toLocaleString() + " is now pending admin verification. Your account is now active!");
+                window.location.href = "dashboard.html";
+            }).catch((error) => {
+                alert("Error updating account: " + error.message);
+            });
         }
     </script>
 
