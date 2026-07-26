@@ -94,19 +94,31 @@
             }
         });
 
-        // Approve Payment function
+        // 2. Approve Payment function (NOW ADDS MONEY TO BALANCE)
         function approvePayment(emailKey, tierAmount) {
-            if (confirm("Have you confirmed the money in your OPay account? Click OK to activate user.")) {
-                db.ref('users/' + emailKey).update({
-                    tier: tierAmount,
-                    paymentStatus: "Approved"
-                }).then(() => {
-                    alert("Success! User account is now fully activated.");
+            if (confirm("Have you confirmed the money in your OPay account? Click OK to activate user and fund their wallet.")) {
+                
+                // Get the user's current balance first
+                db.ref('users/' + emailKey).once('value').then(function(snapshot) {
+                    let userData = snapshot.val();
+                    let currentBalance = userData.balance || 0;
+                    
+                    // Add their investment to their balance
+                    let newBalance = currentBalance + parseInt(tierAmount);
+                    
+                    // Update the database with new balance, tier, and approved status
+                    db.ref('users/' + emailKey).update({
+                        tier: tierAmount,
+                        paymentStatus: "Approved",
+                        balance: newBalance
+                    }).then(() => {
+                        alert("Success! User account is activated. ₦" + parseInt(tierAmount).toLocaleString() + " has been added to their Main Balance.");
+                    });
                 });
             }
         }
 
-        // 2. Load Pending Withdrawals (Still from Local Storage for now)
+        // 3. Load Pending Withdrawals
         function loadRequests() {
             let requests = JSON.parse(localStorage.getItem('novavestRequests')) || [];
             let tableBody = document.getElementById('requestTableBody');
