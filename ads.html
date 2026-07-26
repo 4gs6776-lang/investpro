@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Watch & Earn</title>
     <style>
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; margin: 0; padding: 20px; text-align: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; padding: 20px; text-align: center; }
         header { background-color: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .logo { font-size: 24px; font-weight: 800; color: #00a86b; }
         .ad-box { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; }
@@ -37,13 +38,41 @@
         <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
     </div>
 
+    <!-- Firebase Connection -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnCejfQcvxQjcb3JESNPvZJpGgwbZy9bY",
+            authDomain: "novavest-58ae5.firebaseapp.com",
+            databaseURL: "https://novavest-58ae5-default-rtdb.firebaseio.com/",
+            projectId: "novavest-58ae5",
+            storageBucket: "novavest-58ae5.firebasestorage.app",
+            messagingSenderId: "596912273946",
+            appId: "1:596912273946:web:50fdb479fbc088a9392fa3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         // 1. SECURITY CHECK: Make sure the user has paid
-        let isActivated = localStorage.getItem('novavestTier');
-        if(!isActivated) {
-            alert("Access Denied! Please activate your account by making a payment first.");
-            window.location.href = "payment.html"; // Send them to pay
+        let userEmail = localStorage.getItem('novavestEmail');
+        if(!userEmail) {
+            alert("Please login first.");
+            window.location.href = "login.html";
         }
+        let safeEmail = userEmail.replace(/\./g, ',');
+
+        // Check if they are activated in the cloud
+        db.ref('users/' + safeEmail).once('value').then(function(snapshot) {
+            let userData = snapshot.val();
+            if (!userData || !userData.tier || userData.tier === "None") {
+                alert("Access Denied! Please activate your account by making a payment first.");
+                window.location.href = "payment.html"; 
+            } else if (userData.paymentStatus === "Pending") {
+                alert("Your payment is still pending admin approval. Please wait.");
+                window.location.href = "dashboard.html";
+            }
+        });
 
         // 2. Countdown Timer Logic
         let timeLeft = 10;
@@ -63,14 +92,24 @@
             }
         }, 1000);
 
-        // 3. Add money to balance when claimed
+        // 3. Add money to Firebase Balance when claimed
         claimBtn.addEventListener('click', function() {
-            let currentBalance = parseFloat(localStorage.getItem('novavestBalance')) || 0;
-            currentBalance += 50;
-            localStorage.setItem('novavestBalance', currentBalance);
-
-            alert("Success! You earned ₦50.00");
-            window.location.href = "dashboard.html";
+            // Get current balance from cloud
+            db.ref('users/' + safeEmail).once('value').then(function(snapshot) {
+                let userData = snapshot.val();
+                let currentBalance = userData.balance || 0;
+                
+                // Add 50 Naira
+                let newBalance = currentBalance + 50;
+                
+                // Save new balance to cloud
+                db.ref('users/' + safeEmail).update({
+                    balance: newBalance
+                }).then(() => {
+                    alert("Success! You earned ₦50.00");
+                    window.location.href = "dashboard.html";
+                });
+            });
         });
     </script>
 
