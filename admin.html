@@ -30,7 +30,7 @@
     <div class="container">
         <h2>Pending Payment Verifications</h2>
         <table>
-            <thead><tr><th>User Name</th><th>Email</th><th>Amount Paid</th><th>Action</th></tr></thead>
+            <thead><tr><th>User Name</th><th>Email</th><th>Amount Paid</th><th>Referred By</th><th>Action</th></tr></thead>
             <tbody id="pendingPaymentsBody"></tbody>
         </table>
     </div>
@@ -79,41 +79,63 @@
                 let user = users[key];
                 if (user.paymentStatus === "Pending") {
                     hasPending = true;
+                    let refDisplay = user.referredBy && user.referredBy !== "None" ? user.referredBy.replace(/,/g, '.') : "None";
+                    
                     let row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${user.fullname}</td>
                         <td>${user.email}</td>
                         <td style="font-weight: 800; color: #007a4d;">₦${parseInt(user.requestedTier).toLocaleString()}</td>
-                        <td><button class="btn-approve" onclick="approvePayment('${key}', '${user.requestedTier}')">Approve Payment</button></td>
+                        <td>${refDisplay}</td>
+                        <td><button class="btn-approve" onclick="approvePayment('${key}', '${user.requestedTier}', '${user.referredBy}')">Approve Payment</button></td>
                     `;
                     tableBody.appendChild(row);
                 }
             }
             if(!hasPending) {
-                tableBody.innerHTML = '<tr><td colspan="4" class="empty-msg">No pending payments right now.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="5" class="empty-msg">No pending payments right now.</td></tr>';
             }
         });
 
-        // Approve Payment
-        function approvePayment(emailKey, tierAmount) {
+        // 2. Approve Payment (NOW INCLUDES REFERRAL BONUS LOGIC)
+        function approvePayment(emailKey, tierAmount, referrer) {
             if (confirm("Have you confirmed the money? Click OK to activate user and fund wallet.")) {
                 db.ref('users/' + emailKey).once('value').then(function(snapshot) {
                     let userData = snapshot.val();
                     let currentBalance = userData.balance || 0;
                     let newBalance = currentBalance + parseInt(tierAmount);
                     
+                    // Activate the user
                     db.ref('users/' + emailKey).update({
                         tier: tierAmount,
                         paymentStatus: "Approved",
                         balance: newBalance
                     }).then(() => {
                         alert("Success! Account activated. Balance updated.");
+                        
+                        // Check if someone referred them
+                        if (referrer && referrer !== "None" && referrer !== "null") {
+                            // Give Referrer ₦500 Bonus!
+                            db.ref('users/' + referrer).once('value').then(function(refSnap) {
+                                let refData = refSnap.val();
+                                if(refData) {
+                                    let refBalance = refData.balance || 0;
+                                    let refNewBalance = refBalance + 500; // 500 Naira Bonus
+                                    
+                                    db.ref('users/' + referrer).update({
+                                        balance: refNewBalance
+                                    }).then(() => {
+                                        alert("Referral Bonus of ₦500 given to: " + referrer.replace(/,/g, '.'));
+                                    });
+                                }
+                            });
+                        }
                     });
                 });
             }
         }
 
-        // 2. Load Pending Withdrawals from Cloud
+        // 3. Load Pending Withdrawals
         db.ref('withdrawals').on('value', function(snapshot) {
             let withdrawals = snapshot.val();
             let tableBody = document.getElementById('requestTableBody');
@@ -143,7 +165,6 @@
             }
         });
 
-        // Approve Withdrawal (Just delete it from cloud since money is already deducted from user)
         function approveWithdrawal(reqKey) {
             if (confirm("Have you sent the money to their bank account?")) {
                 db.ref('withdrawals/' + reqKey).remove().then(() => {
@@ -152,20 +173,16 @@
             }
         }
 
-        // Reject Withdrawal (Give money back to user in Cloud, then delete request)
         function rejectWithdrawal(reqKey, userSafeEmail, amount) {
             if (confirm("Reject this withdrawal? The money will be returned to the user's app balance.")) {
-                // Get user balance
                 db.ref('users/' + userSafeEmail).once('value').then(function(snapshot) {
                     let userData = snapshot.val();
                     let currentBalance = userData.balance || 0;
                     let newBalance = currentBalance + amount;
                     
-                    // Return money
                     db.ref('users/' + userSafeEmail).update({
                         balance: newBalance
                     }).then(() => {
-                        // Delete request
                         db.ref('withdrawals/' + reqKey).remove().then(() => {
                             alert("Withdrawal rejected. Money returned to user.");
                         });
