@@ -14,6 +14,10 @@
         .avatar { width: 36px; height: 36px; background-color: var(--light-green); color: var(--primary-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--primary-green); }
         .btn-logout { background-color: var(--danger); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; border: none; cursor: pointer; }
         .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
+        
+        /* Image Styling */
+        .promo-image { width: 100%; max-width: 800px; margin: 0 auto 20px auto; display: block; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
         .quote-box { background: var(--light-green); border-left: 4px solid var(--primary-green); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-style: italic; color: var(--dark-green); font-weight: 600; text-align: center; }
         .balance-card { background: var(--card-bg); padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 4px solid var(--primary-green); }
         .bal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -57,6 +61,10 @@
         </div>
     </header>
     <div class="container">
+        
+        <!-- 1st Promo Image (Top) -->
+        <img src="https://z-cdn-media.chatglm.cn/files/30f841e2-4ea1-4faf-92ad-2d6414f456fc.png?auth_key=1885157062-89f1832bbbd94ee7863b9a03bda279c9-0-2bc88989c0dd2302628a1d1e26cf98c2" alt="Invest Today, Grow Forever" class="promo-image">
+
         <div class="quote-box">"Your journey to financial freedom starts here. Smart investments, steady growth."</div>
         <div class="balance-card">
             <div class="bal-header"><span class="bal-label">Total Balance</span><span class="profit-badge">📈 +10.98%</span></div>
@@ -85,6 +93,10 @@
             <div class="ref-text"><h4>Earn More, Grow Faster</h4><p>Invite friends and earn ₦500 when they activate their account!</p></div>
             <div class="ref-box"><input type="text" value="Loading link..." id="refLink" readonly><button class="btn-copy" onclick="copyRef()">Copy Link</button></div>
         </div>
+
+        <!-- 2nd Promo Image (Bottom) -->
+        <img src="https://z-cdn-media.chatglm.cn/files/30f841e2-4ea1-4faf-92ad-2d6414f456fc.png?auth_key=1885157062-89f1832bbbd94ee7863b9a03bda279c9-0-2bc88989c0dd2302628a1d1e26cf98c2" alt="Smart Investment, Bright Future" class="promo-image">
+
     </div>
 
     <!-- Firebase Connection -->
@@ -105,16 +117,13 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // 1. Check if user is logged in
         auth.onAuthStateChanged(function(user) {
             if (!user) {
-                // If not logged in, kick them to login page
                 window.location.href = "login.html";
             } else {
                 let userEmail = user.email;
                 let safeEmail = userEmail.replace(/\./g, ',');
 
-                // Fetch their data from the cloud
                 db.ref('users/' + safeEmail).on('value', function(snapshot) {
                     let userData = snapshot.val();
                     if(userData) {
@@ -122,7 +131,6 @@
                         let currentBalance = userData.balance || 0;
                         document.getElementById('mainBalance').innerText = '₦' + currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-                        // Generate REAL Referral Link
                         let currentUrl = window.location.href;
                         let baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf("/")) + "/";
                         document.getElementById('refLink').value = baseUrl + "register.html?ref=" + safeEmail;
@@ -146,14 +154,12 @@
             }
         });
 
-        // 2. Logout Function
         function logoutUser() {
             auth.signOut().then(function() {
                 window.location.href = "login.html";
             });
         }
 
-        // 3. Copy Referral Link
         function copyRef() {
             let refInput = document.getElementById('refLink');
             refInput.select();
