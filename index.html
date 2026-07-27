@@ -15,18 +15,26 @@
         .btn-login { color: #00a86b; border: 2px solid #00a86b; }
         .btn-register { background: #00a86b; color: white; }
         
-        /* Hero Section with Image */
+        /* Hero Section */
         .hero-container { background: white; padding: 40px 20px; }
         .hero { display: flex; max-width: 1000px; margin: 0 auto; align-items: center; gap: 40px; flex-wrap: wrap; }
-        .hero-text { flex: 1; min-width: 300px; }
-        .hero-text h1 { font-size: 36px; color: #1a1a1a; margin-bottom: 15px; line-height: 1.2; }
+        .hero-text { flex: 1; min-width: 300px; text-align: center; }
+        .hero-text h1 { font-size: 32px; color: #1a1a1a; margin-bottom: 15px; line-height: 1.2; }
         .hero-text h1 span { color: #00a86b; }
         .hero-text p { font-size: 16px; color: #666; line-height: 1.6; margin-bottom: 30px; }
         .cta-btn { background: #00a86b; color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; text-decoration: none; transition: 0.2s; display: inline-block; width: 100%; max-width: 300px; text-align: center; }
         .cta-btn:hover { background: #007a4d; }
         
-        .hero-image { flex: 1; min-width: 300px; text-align: center; }
-        .hero-image img { width: 100%; max-width: 400px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        /* Fixed Image Styling */
+        .hero-image { flex: 1; min-width: 300px; text-align: center; width: 100%; }
+        .hero-image img {
+            width: 100%; 
+            max-width: 400px;
+            height: 220px; /* Fixed height so it doesn't stretch too tall */
+            object-fit: cover; /* This cuts the image perfectly so it doesn't distort */
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
 
         /* Features Section */
         .features { display: flex; justify-content: center; gap: 20px; padding: 60px 20px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto; }
