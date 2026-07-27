@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Digital Rewards Platform</title>
+    <!-- These two lines activate the Downloadable App feature -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#bb86fc">
+    
     <link rel="stylesheet" href="style.css">
     <style>
         header { background: rgba(12, 6, 22, 0.6); backdrop-filter: blur(20px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--glass-border); }
@@ -55,5 +59,18 @@
     <div class="admin-footer">
         <a href="admin-login.html">Admin Login</a>
     </div>
+
+    <!-- This script registers the Service Worker to make it work offline -->
+    <script>
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js').then(function(registration) {
+              console.log('ServiceWorker registration successful!');
+            }, function(err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+          });
+        }
+    </script>
 </body>
 </html>
