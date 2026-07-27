@@ -4,6 +4,7 @@ const urlsToCache = [
   'dashboard.html',
   'register.html',
   'login.html',
+  'style.css',
   'manifest.json'
 ];
 
