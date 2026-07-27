@@ -7,18 +7,43 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .glass-container { max-width: 450px; text-align: center; }
-        .video-placeholder { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); color: var(--neon-main); height: 200px; display: flex; align-items: center; justify-content: center; border-radius: 10px; margin-bottom: 20px; font-size: 20px; font-weight: bold; }
-        .timer { font-size: 40px; font-weight: 800; color: var(--neon-main); margin-bottom: 20px; text-shadow: 0 0 15px var(--neon-glow); }
+        .video-wrapper { background: #000; border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; position: relative; }
+        /* The actual video styling */
+        video { width: 100%; height: 250px; object-fit: cover; display: block; }
+        .timer { font-size: 40px; font-weight: 800; color: var(--neon-main); margin-bottom: 10px; text-shadow: 0 0 15px var(--neon-glow); }
+        .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 5px; margin: 0 auto 20px auto; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--neon-main); width: 0%; transition: width 0.3s linear; }
+        .warning-text { color: var(--danger); font-size: 14px; margin-bottom: 15px; display: none; font-weight: 600; }
+        
+        /* Hide the claim button entirely until the video is done */
+        .hidden-btn { display: none; }
+        .visible-btn { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body style="padding: 20px;">
     <div class="logo">NovaVest</div>
     <div class="glass-container" style="padding: 30px;">
         <h2>Watch & Earn</h2>
-        <div class="video-placeholder">🎬 Promotional Video Playing...</div>
-        <p style="color: var(--text-muted); margin-bottom: 15px;">Please wait for the timer to finish to claim your reward.</p>
-        <div class="timer" id="timerDisplay">10</div>
-        <button id="claimBtn" class="btn" disabled style="opacity: 0.5;">Claim ₦50</button>
+        
+        <!-- REAL VIDEO PLAYER -->
+        <div class="video-wrapper">
+            <!-- Short 15-second sample video. You can change this src to your own video later! -->
+            <video id="adVideo" playsinline muted controls>
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <p style="color: var(--text-muted); margin-bottom: 15px;">⚠️ You must watch the full video to unlock your reward.</p>
+        <div class="warning-text" id="warningText">▶️ Please tap play and watch the video.</div>
+        
+        <div class="timer" id="timerDisplay">15</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        
+        <!-- BUTTON IS COMPLETELY HIDDEN AT FIRST -->
+        <button id="claimBtn" class="btn hidden-btn" onclick="claimReward()">Claim ₦50</button>
+        
         <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
     </div>
 
@@ -31,18 +56,74 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        auth.onAuthStateChanged(user => { if (!user) window.location.href = "login.html"; });
-        
-        let timeLeft = 10;
-        let claimBtn = document.getElementById('claimBtn');
-        setInterval(() => {
-            timeLeft--;
-            document.getElementById('timerDisplay').innerText = timeLeft;
-            if (timeLeft <= 0) { clearInterval(); document.getElementById('timerDisplay').innerText = "Done!"; claimBtn.disabled = false; claimBtn.style.opacity = 1; }
-        }, 1000);
+        auth.onAuthStateChanged(user => {
+            if (!user) { window.location.href = "login.html"; return; }
+            let safeEmail = user.email.replace(/\./g, ',');
+            db.ref('users/' + safeEmail).once('value').then(snap => {
+                let userData = snap.val();
+                if (!userData || !userData.tier || userData.tier === "None") { window.location.href = "payment.html"; } 
+                else if (userData.paymentStatus === "Pending") { window.location.href = "dashboard.html"; }
+            });
+        });
 
-        claimBtn.addEventListener('click', function() {
-            let user = auth.currentUser; if(user) {
+        // STRICT VIDEO WATCH LOGIC
+        const video = document.getElementById('adVideo');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const claimBtn = document.getElementById('claimBtn');
+        const progressFill = document.getElementById('progressFill');
+        const warningText = document.getElementById('warningText');
+        
+        // Try to autoplay the video silently
+        video.play().catch(() => {
+            warningText.style.display = 'block';
+            warningText.innerText = "▶️ Please tap the play button to start the video.";
+        });
+
+        // Track video progress
+        video.ontimeupdate = function() {
+            let timeWatched = video.currentTime;
+            let totalDuration = video.duration || 15; // Get actual video length
+            let remaining = Math.max(0, Math.ceil(totalDuration - timeWatched));
+            
+            timerDisplay.innerText = remaining;
+            let percent = (timeWatched / totalDuration) * 100;
+            progressFill.style.width = Math.min(100, percent) + '%';
+
+            // When the video is almost done, prepare to unlock
+            if (timeWatched >= totalDuration - 0.5) {
+                video.pause();
+                video.currentTime = totalDuration;
+                timerDisplay.innerText = "Done!";
+                progressFill.style.width = '100%';
+                warningText.style.display = 'none';
+                
+                // UNLOCK THE BUTTON (Make it visible)
+                claimBtn.classList.remove('hidden-btn');
+                claimBtn.classList.add('visible-btn');
+            }
+        };
+
+        // If they pause the video early
+        video.onpause = function() {
+            if (video.currentTime < video.duration - 0.5) {
+                warningText.style.display = 'block';
+                warningText.innerText = "⏸️ Video Paused! Resume watching to earn your reward.";
+                progressFill.style.background = 'var(--danger)';
+            }
+        };
+
+        // If they resume the video
+        video.onplay = function() {
+            if (video.currentTime < video.duration - 0.5) {
+                warningText.style.display = 'none';
+                progressFill.style.background = 'var(--neon-main)';
+            }
+        };
+
+        // CLAIM REWARD FUNCTION
+        function claimReward() {
+            let user = auth.currentUser; 
+            if(user) {
                 let safeEmail = user.email.replace(/\./g, ',');
                 db.ref('users/' + safeEmail).once('value').then(snap => {
                     let newBalance = (snap.val().balance || 0) + 50;
@@ -52,7 +133,7 @@
                     });
                 });
             }
-        });
+        }
     </script>
 </body>
 </html>
