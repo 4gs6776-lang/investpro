@@ -4,140 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Withdraw</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; padding: 20px; }
-        header { background-color: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .logo { font-size: 24px; font-weight: 800; color: #00a86b; }
-        .form-container { max-width: 450px; margin: 0 auto; padding: 30px; background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; }
-        h2 { color: #1a1a1a; text-align: center; margin-top: 0; }
-        .balance-display { text-align: center; font-size: 16px; margin-bottom: 15px; padding: 12px; background: #e6f7ef; border-radius: 8px; color: #007a4d; font-weight: bold; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
-        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        input:focus { border-color: #00a86b; outline: none; }
-        .btn { width: 100%; background-color: #00a86b; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 16px; }
-        .btn:hover { background-color: #007a4d; }
-        .back-link { display: block; text-align: center; margin-top: 15px; color: #00a86b; text-decoration: none; font-weight: 600; }
+        .glass-container { max-width: 450px; }
+        .balance-display { text-align: center; font-size: 16px; margin-bottom: 15px; padding: 12px; background: rgba(187, 134, 252, 0.05); border: 1px solid rgba(187, 134, 252, 0.2); border-radius: 8px; color: var(--neon-main); font-weight: bold; }
+        .min-text { font-size: 14px; color: var(--danger); text-align: center; margin-bottom: 15px; }
     </style>
 </head>
-<body>
-
-    <header>
-        <div class="logo">NovaVest</div>
-    </header>
-
-    <div class="form-container">
+<body style="padding: 20px;">
+    <div class="logo">NovaVest</div>
+    <div class="glass-container" style="padding: 30px;">
         <h2>Request Withdrawal</h2>
-        
-        <div class="balance-display">
-            Available Balance: <span id="currentBalanceDisplay">₦0.00</span>
-        </div>
-
-        <p style="font-size: 14px; color: #dc3545; text-align: center; margin-top: 0;" id="minWithdrawText">* Calculating minimum withdrawal...</p>
-
+        <div class="balance-display">Available Balance: <span id="currentBalanceDisplay">₦0.00</span></div>
+        <p class="min-text" id="minWithdrawText">* Calculating minimum withdrawal...</p>
         <form id="withdrawForm">
-            <div class="form-group">
-                <label for="amount">Amount to Withdraw (₦):</label>
-                <input type="number" id="amount" placeholder="Enter amount" required>
-            </div>
-
-            <div class="form-group">
-                <label for="bank">Bank Name:</label>
-                <input type="text" id="bank" placeholder="e.g. OPay, GTBank" required>
-            </div>
-
-            <div class="form-group">
-                <label for="accountNumber">Account Number:</label>
-                <input type="text" id="accountNumber" placeholder="Enter your 10-digit account number" required>
-            </div>
-
-            <div class="form-group">
-                <label for="accountName">Account Name:</label>
-                <input type="text" id="accountName" placeholder="Enter your account name" required>
-            </div>
-
-            <button type="submit" class="btn">Submit Withdrawal Request</button>
+            <div class="form-group"><label>Amount to Withdraw (₦):</label><input type="number" id="amount" required></div>
+            <div class="form-group"><label>Bank Name:</label><input type="text" id="bank" required></div>
+            <div class="form-group"><label>Account Number:</label><input type="text" id="accountNumber" required></div>
+            <div class="form-group"><label>Account Name:</label><input type="text" id="accountName" required></div>
+            <button type="submit" class="btn">Submit Request</button>
         </form>
-
         <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
     </div>
 
-    <!-- Firebase Connection -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDnCejfQcvxQjcb3JESNPvZJpGgwbZy9bY",
-            authDomain: "novavest-58ae5.firebaseapp.com",
-            databaseURL: "https://novavest-58ae5-default-rtdb.firebaseio.com/",
-            projectId: "novavest-58ae5",
-            storageBucket: "novavest-58ae5.firebasestorage.app",
-            messagingSenderId: "596912273946",
-            appId: "1:596912273946:web:50fdb479fbc088a9392fa3"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyDnCejfQcvxQjcb3JESNPvZJpGgwbZy9bY", authDomain: "novavest-58ae5.firebaseapp.com", databaseURL: "https://novavest-58ae5-default-rtdb.firebaseio.com/", projectId: "novavest-58ae5", storageBucket: "novavest-58ae5.firebasestorage.app", messagingSenderId: "596912273946", appId: "1:596912273946:web:50fdb479fbc088a9392fa3" };
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.database();
+        let currentBalance = 0, userTier = 0;
 
-        let userEmail = localStorage.getItem('novavestEmail');
-        if(!userEmail) { window.location.href = "login.html"; }
-        let safeEmail = userEmail.replace(/\./g, ',');
-
-        let userTier = 0;
-        let currentBalance = 0;
-
-        // 1. Get user data from Cloud
-        db.ref('users/' + safeEmail).on('value', function(snapshot) {
-            let userData = snapshot.val();
-            if(userData) {
-                currentBalance = userData.balance || 0;
-                userTier = parseFloat(userData.tier) || 0;
-                
-                document.getElementById('currentBalanceDisplay').innerText = '₦' + currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                
-                let minWithdrawal = userTier * 2; 
-                document.getElementById('minWithdrawText').innerText = `* Minimum withdrawal for your plan is ₦${minWithdrawal.toLocaleString()}`;
-            }
+        auth.onAuthStateChanged(user => {
+            if (!user) { window.location.href = "login.html"; return; }
+            let safeEmail = user.email.replace(/\./g, ',');
+            db.ref('users/' + safeEmail).on('value', snap => {
+                let data = snap.val();
+                currentBalance = data.balance || 0; userTier = parseFloat(data.tier) || 0;
+                document.getElementById('currentBalanceDisplay').innerText = '₦' + currentBalance.toLocaleString();
+                document.getElementById('minWithdrawText').innerText = `* Minimum withdrawal is ₦${(userTier * 2).toLocaleString()}`;
+            });
         });
 
-        // 2. Handle form submission
         document.getElementById('withdrawForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
-
             let requestedAmount = parseFloat(document.getElementById('amount').value);
-            let bankName = document.getElementById('bank').value;
-            let accNum = document.getElementById('accountNumber').value;
-            let accName = document.getElementById('accountName').value;
             let minWithdrawal = userTier * 2;
-
-            if (requestedAmount > currentBalance) {
-                alert("Error: You do not have enough balance for this withdrawal.");
-            } else if (requestedAmount < minWithdrawal) {
-                alert(`Error: The minimum withdrawal amount for your plan is ₦${minWithdrawal.toLocaleString()}.`);
-            } else {
-                // Deduct balance immediately from user account in Cloud
-                let newBalance = currentBalance - requestedAmount;
-                
-                db.ref('users/' + safeEmail).update({
-                    balance: newBalance
-                }).then(() => {
-                    // Save withdrawal request to a new "withdrawals" folder in Cloud
-                    db.ref('withdrawals').push({
-                        userEmail: userEmail,
-                        userSafeEmail: safeEmail,
-                        amount: requestedAmount,
-                        bank: bankName,
-                        accNum: accNum,
-                        accName: accName,
-                        status: "Pending"
-                    }).then(() => {
-                        alert("Success! Your withdrawal request of ₦" + requestedAmount.toLocaleString() + " is now PENDING admin approval.");
+            if (requestedAmount > currentBalance) { alert("Error: Insufficient balance."); } 
+            else if (requestedAmount < minWithdrawal) { alert(`Error: Minimum withdrawal is ₦${minWithdrawal}.`); } 
+            else {
+                let user = auth.currentUser; let safeEmail = user.email.replace(/\./g, ',');
+                db.ref('users/' + safeEmail).update({ balance: currentBalance - requestedAmount }).then(() => {
+                    db.ref('withdrawals').push({ userEmail: user.email, userSafeEmail: safeEmail, amount: requestedAmount, bank: document.getElementById('bank').value, accNum: document.getElementById('accountNumber').value, accName: document.getElementById('accountName').value, status: "Pending" }).then(() => {
+                        alert("Withdrawal Pending Admin Approval!");
                         window.location.href = "dashboard.html";
                     });
                 });
             }
         });
     </script>
-
 </body>
 </html>
