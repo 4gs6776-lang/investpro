@@ -4,7 +4,6 @@
     --neon-glow: rgba(187, 134, 252, 0.4);
     --gold-accent: #ffd700;
     --bg-dark: #0c0616; /* Deep dark purple/black */
-    --bg-glow: radial-gradient(circle at 50% 0%, #260b42 0%, #0c0616 80%);
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
     --text-main: #ffffff;
@@ -16,9 +15,9 @@
 
 body { 
     font-family: 'Segoe UI', Roboto, sans-serif; 
-    background-color: var(--bg-dark);
-    background-image: var(--bg-glow);
-    background-attachment: fixed;
+    /* Your exact image with a dark purple overlay */
+    background: linear-gradient(rgba(12, 6, 22, 0.92), rgba(38, 11, 66, 0.95)), url('images/NovaVest-promo.png') no-repeat center center fixed; 
+    background-size: cover;
     color: var(--text-main); 
     min-height: 100vh;
     line-height: 1.5;
@@ -44,7 +43,11 @@ body {
 /* Inputs */
 input, select { width: 100%; padding: 12px; border-radius: 8px; font-size: 16px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); color: var(--text-main); transition: 0.2s; }
 input:focus, select:focus { border-color: var(--neon-main); outline: none; box-shadow: 0 0 10px var(--neon-glow); }
+input option { color: black; }
 
-/* Text Utilities */
+/* Text & Layout Utilities */
 .logo { font-size: 28px; font-weight: 800; color: var(--neon-main); text-shadow: 0 0 15px var(--neon-glow); margin-bottom: 20px; text-align: center; }
 .back-link { display: block; text-align: center; margin-top: 15px; color: var(--neon-main); text-decoration: none; font-weight: 600; font-size: 14px; }
+.form-group { margin-bottom: 20px; }
+label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted); font-size: 14px; }
+h2 { text-align: center; color: var(--text-main); margin-bottom: 20px; }
