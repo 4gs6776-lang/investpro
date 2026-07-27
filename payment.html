@@ -5,52 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Complete Payment</title>
     <style>
+        :root {
+            --neon-green: #00ff9d;
+            --gold-accent: #ffd700;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #a0b3a8;
+            --danger: #ff4d4d;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; padding: 20px; text-align: center; }
-        header { text-align: center; margin-bottom: 20px; }
-        .logo { font-size: 28px; font-weight: 800; color: #00a86b; }
-        .container { max-width: 450px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; }
-        select { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; margin-bottom: 20px; background: white; }
-        .amount-box { background: #e6f7ef; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-        .amount-box h2 { margin: 0; color: #007a4d; font-size: 28px; }
-        .bank-details { border: 2px dashed #00a86b; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: left; }
+        
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(rgba(0, 10, 5, 0.85), rgba(0, 20, 10, 0.95)), url('https://z-cdn-media.chatglm.cn/files/30f841e2-4ea1-4faf-92ad-2d6414f456fc.png?auth_key=1885159136-9a4e205a52a1464fa2bf77391a919237-0-3ee60c15e334df9b53f98c4d12ca888e') no-repeat center center fixed; 
+            background-size: cover;
+            color: var(--text-main); 
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo { font-size: 28px; font-weight: 800; color: var(--neon-green); text-shadow: 0 0 15px rgba(0, 255, 157, 0.4); margin-bottom: 20px; }
+
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px) saturate(150%);
+            -webkit-backdrop-filter: blur(24px) saturate(150%);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 20px;
+        }
+
+        h2 { text-align: center; color: var(--text-main); margin-bottom: 10px; }
+        p { color: var(--text-muted); text-align: center; margin-bottom: 20px; font-size: 14px; }
+        
+        select { 
+            width: 100%; padding: 12px; border-radius: 8px; font-size: 16px; margin-bottom: 20px; 
+            background: rgba(0, 0, 0, 0.3); 
+            border: 1px solid var(--glass-border); 
+            color: var(--text-main); 
+        }
+        select option { color: black; }
+        select:focus { border-color: var(--neon-green); outline: none; }
+
+        .amount-box { background: rgba(0, 255, 157, 0.05); border: 1px solid rgba(0, 255, 157, 0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
+        .amount-box h2 { margin: 0; color: var(--neon-green); font-size: 28px; }
+        
+        .bank-details { border: 1px solid var(--glass-border); padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: left; background: rgba(0, 0, 0, 0.2); }
         .detail-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .detail-label { font-weight: 600; color: #666; }
-        .copy-btn { background: #00a86b; border: none; color: white; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        .timer-box { font-size: 32px; font-weight: 800; color: #dc3545; margin: 10px 0 20px; }
-        .btn-confirm { width: 100%; background-color: #00a86b; color: white; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 16px; }
-        .btn-confirm:disabled { background-color: #ccc; }
+        .detail-row:last-child { margin-bottom: 0; }
+        .detail-label { font-weight: 600; color: var(--text-muted); }
+        .copy-btn { background: var(--neon-green); border: none; color: #000; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: 800; font-size: 12px; }
+        
+        .timer-box { font-size: 32px; font-weight: 800; color: var(--danger); margin: 10px 0 20px; text-align: center; text-shadow: 0 0 10px rgba(255, 77, 77, 0.3); }
+        .btn-confirm { width: 100%; background: var(--gold-accent); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        .btn-confirm:hover { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+        .btn-confirm:disabled { background: rgba(255, 255, 255, 0.1); color: var(--text-muted); cursor: not-allowed; box-shadow: none; }
+        
+        .back-link { display: block; text-align: center; margin-top: 15px; color: var(--neon-green); text-decoration: none; font-weight: 600; font-size: 14px; }
     </style>
 </head>
 <body>
-    <header><div class="logo">NovaVest</div></header>
-    <div class="container">
-        <h2 style="margin-top:0;">Activate Your Account</h2>
-        <p style="color:#666; margin-bottom: 20px;">Select an investment amount to activate your account.</p>
+    <div class="logo">NovaVest</div>
+    <div class="glass-container">
+        <h2>Activate Your Account</h2>
+        <p>Select an investment amount to activate your account and start earning daily ROI.</p>
+
         <select id="tierSelect" onchange="updateAmount()">
             <optgroup label="Starter Plan (5% Daily)">
-                <option value="1000">₦1,000</option><option value="2000">₦2,000</option><option value="3000">₦3,000</option><option value="4000">₦4,000</option>
+                <option value="1000">₦1,000</option>
+                <option value="2000">₦2,000</option>
+                <option value="3000">₦3,000</option>
+                <option value="4000">₦4,000</option>
             </optgroup>
             <optgroup label="Growth Plan (8% Daily)">
-                <option value="5000">₦5,000</option><option value="10000">₦10,000</option><option value="15000">₦15,000</option><option value="20000">₦20,000</option>
+                <option value="5000">₦5,000</option>
+                <option value="10000">₦10,000</option>
+                <option value="15000">₦15,000</option>
+                <option value="20000">₦20,000</option>
             </optgroup>
             <optgroup label="VIP Plan (12% Daily)">
                 <option value="50000">₦50,000 🏆</option>
             </optgroup>
         </select>
+
         <div class="amount-box">
-            <p style="margin:0; color:#666; font-size:14px;">Amount to Transfer:</p>
+            <p style="margin:0; color:var(--text-muted); font-size:14px;">Amount to Transfer:</p>
             <h2 id="amountToPay">₦1,000</h2>
         </div>
+
         <div class="bank-details">
-            <div class="detail-row"><span class="detail-label">Bank Name:</span> <span style="font-weight:700;">OPay</span></div>
-            <div class="detail-row"><span class="detail-label">Account Number:</span> <span style="font-weight:700;">648 712 6034</span> <button class="copy-btn" onclick="copyAccount()">Copy</button></div>
-            <div class="detail-row"><span class="detail-label">Account Name:</span> <span style="font-weight:700;">GOODNEWS LAWSON</span></div>
+            <div class="detail-row">
+                <span class="detail-label">Bank Name:</span>
+                <span style="font-weight:700; color:var(--text-main);">OPay</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Account Number:</span>
+                <span style="font-weight:700; color:var(--text-main);">648 712 6034</span>
+                <button class="copy-btn" onclick="copyAccount()">Copy</button>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Account Name:</span>
+                <span style="font-weight:700; color:var(--text-main);">GOODNEWS LAWSON</span>
+            </div>
         </div>
-        <p style="color:#666; font-size:14px;">Time remaining to make payment:</p>
+
+        <p style="color:var(--text-muted); font-size:14px;">Time remaining to make payment:</p>
         <div class="timer-box" id="countdown">30:00</div>
+
         <button class="btn-confirm" id="confirmBtn" onclick="confirmPayment()">I have made this payment</button>
-        <a href="dashboard.html" style="display:block; margin-top:15px; color:#00a86b; text-decoration:none; font-weight:600;">← Back to Dashboard</a>
+        
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -77,14 +149,17 @@
         let timeLeft = 1800; 
         let timerDisplay = document.getElementById('countdown');
         let confirmBtn = document.getElementById('confirmBtn');
+
         let countdownInterval = setInterval(function() {
             timeLeft--;
             let minutes = Math.floor(timeLeft / 60);
             let seconds = timeLeft % 60;
             timerDisplay.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
             if (timeLeft <= 0) {
                 clearInterval(countdownInterval);
                 timerDisplay.innerText = "Time Expired";
+                timerDisplay.style.color = "var(--text-muted)";
                 confirmBtn.disabled = true;
                 alert("Time expired! Please go back to the dashboard to start again.");
             }
@@ -98,10 +173,14 @@
         function confirmPayment() {
             let selectedAmount = document.getElementById('tierSelect').value;
             let userEmail = localStorage.getItem('novavestEmail');
-            if(!userEmail) { alert("Error: Please register first."); window.location.href = "register.html"; return; }
+            
+            if(!userEmail) { 
+                alert("Error: Please register first."); 
+                window.location.href = "register.html"; 
+                return; 
+            }
             let safeEmail = userEmail.replace(/\./g, ',');
             
-            // Set status to Pending! Admin must approve.
             db.ref('users/' + safeEmail).update({
                 paymentStatus: "Pending",
                 requestedTier: selectedAmount
