@@ -15,6 +15,13 @@
         .btn-approve { background: var(--neon-main); color: #000; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 12px; margin-bottom: 5px; }
         .btn-reject { background: rgba(255, 77, 77, 0.2); color: var(--danger); border: 1px solid rgba(255, 77, 77, 0.3); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px; }
         .empty-msg { text-align: center; color: var(--text-muted); font-style: italic; padding: 30px; }
+        
+        /* New ROI Section Styles */
+        .roi-section { text-align: center; margin-bottom: 20px; }
+        .roi-btn { background: var(--gold-accent); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 16px; width: 100%; transition: 0.2s; margin-top: 10px; }
+        .roi-btn:hover { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+        .roi-btn:disabled { background: rgba(255, 255, 255, 0.1); color: var(--text-muted); cursor: not-allowed; box-shadow: none; }
+        .roi-info { color: var(--text-muted); font-size: 14px; margin-bottom: 10px; }
     </style>
 </head>
 <body style="padding: 15px;">
@@ -22,6 +29,13 @@
         <div class="logo" style="margin:0;">NovaVest Admin Panel</div>
         <a href="admin-login.html" class="btn-logout">Logout</a>
     </header>
+
+    <!-- NEW: Daily ROI Distribution -->
+    <div class="glass-card container roi-section">
+        <h2>Daily ROI Distribution</h2>
+        <p class="roi-info">Click the button below once every day to automatically pay daily profits to all activated users.</p>
+        <button class="roi-btn" id="roiBtn" onclick="processDailyROI()">Trigger Daily ROI Payout</button>
+    </div>
 
     <div class="glass-card container">
         <h2>Pending Payment Verifications</h2>
@@ -84,6 +98,48 @@
 
         function approveW(k) { db.ref('withdrawals/' + k).remove().then(() => alert("Approved!")); }
         function rejectW(k, email, amt) { db.ref('users/' + email).once('value').then(s => { db.ref('users/' + email).update({ balance: (s.val().balance || 0) + amt }).then(() => { db.ref('withdrawals/' + k).remove().then(() => alert("Rejected! Money returned.")); }); }); }
+
+        // NEW: DAILY ROI LOGIC
+        function processDailyROI() {
+            if (!confirm("Are you sure you want to trigger the Daily ROI Payout for ALL active users?")) return;
+            
+            let roiBtn = document.getElementById('roiBtn');
+            roiBtn.disabled = true;
+            roiBtn.innerText = "Processing Payouts...";
+
+            db.ref('users').once('value').then(snap => {
+                let users = snap.val();
+                let updates = {};
+                let processedCount = 0;
+
+                for (let key in users) {
+                    let u = users[key];
+                    // Only pay users who have been fully approved
+                    if (u.paymentStatus === "Approved" && u.tier && u.tier !== "None") {
+                        let tierAmount = parseFloat(u.tier);
+                        let roiPercentage = 0;
+
+                        // Calculate ROI based on the tier amount
+                        if (tierAmount >= 1000 && tierAmount <= 4000) roiPercentage = 0.05;      // 5%
+                        else if (tierAmount >= 5000 && tierAmount <= 49000) roiPercentage = 0.08; // 8%
+                        else if (tierAmount >= 50000) roiPercentage = 0.12;                       // 12%
+
+                        let profit = tierAmount * roiPercentage;
+                        let newBalance = (u.balance || 0) + profit;
+                        
+                        updates['users/' + key + '/balance'] = newBalance;
+                        processedCount++;
+                    }
+                }
+
+                // Apply all updates to the cloud database at once
+                db.ref().update(updates).then(() => {
+                    alert("Success! Daily ROI has been paid to " + processedCount + " active users.");
+                    roiBtn.disabled = false;
+                    roiBtn.innerText = "Trigger Daily ROI Payout";
+                });
+            });
+        }
     </script>
 </body>
 </html>
