@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .glass-container { max-width: 450px; }
-        .balance-display { text-align: center; font-size: 16px; margin-bottom: 15px; padding: 12px; background: rgba(187, 134, 252, 0.05); border: 1px solid rgba(187, 134, 252, 0.2); border-radius: 8px; color: var(--neon-main); font-weight: bold; }
+        .balance-display { text-align: center; font-size: 16px; margin-bottom: 15px; padding: 12px; background: rgba(0, 255, 157, 0.05); border: 1px solid rgba(0, 255, 157, 0.2); border-radius: 8px; color: var(--neon-main); font-weight: bold; }
         .min-text { font-size: 14px; color: var(--danger); text-align: center; margin-bottom: 20px; font-weight: 600; }
     </style>
 </head>
@@ -48,7 +48,10 @@
                     currentBalance = data.balance || 0; 
                     userTier = parseFloat(data.tier) || 0;
                     document.getElementById('currentBalanceDisplay').innerText = '₦' + currentBalance.toLocaleString();
-                    document.getElementById('minWithdrawText').innerText = `* Minimum withdrawal is ₦${(userTier * 2).toLocaleString()}`;
+                    
+                    // UPDATED MATH: 3x the registration tier
+                    let minWithdrawal = userTier * 3; 
+                    document.getElementById('minWithdrawText').innerText = `* Minimum withdrawal is ₦${minWithdrawal.toLocaleString()}`;
                 }
             });
         });
@@ -56,9 +59,12 @@
         document.getElementById('withdrawForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
             let requestedAmount = parseFloat(document.getElementById('amount').value);
-            let minWithdrawal = userTier * 2;
+            
+            // UPDATED MATH: 3x the registration tier
+            let minWithdrawal = userTier * 3; 
+            
             if (requestedAmount > currentBalance) { alert("Error: Insufficient balance."); } 
-            else if (requestedAmount < minWithdrawal) { alert(`Error: Minimum withdrawal is ₦${minWithdrawal}.`); } 
+            else if (requestedAmount < minWithdrawal) { alert(`Error: Minimum withdrawal is ₦${minWithdrawal.toLocaleString()}.`); } 
             else {
                 let user = auth.currentUser; let safeEmail = user.email.replace(/\./g, ',');
                 db.ref('users/' + safeEmail).update({ balance: currentBalance - requestedAmount }).then(() => {
