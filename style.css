@@ -15,8 +15,8 @@
 
 body { 
     font-family: 'Segoe UI', Roboto, sans-serif; 
-    /* Your exact image with a dark green overlay */
-    background: linear-gradient(rgba(2, 17, 9, 0.88), rgba(0, 20, 10, 0.95)), url('images/NovaVest-promo.png') no-repeat center center fixed; 
+    /* Lighter overlay (0.4 and 0.6) so your image is clearly visible! */
+    background: linear-gradient(rgba(2, 17, 9, 0.4), rgba(0, 20, 10, 0.6)), url('images/NovaVest-promo.png') no-repeat center center fixed; 
     background-size: cover;
     color: var(--text-main); 
     min-height: 100vh;
