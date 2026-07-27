@@ -31,13 +31,26 @@
     </style>
 </head>
 <body>
+    <!-- Hamburger Menu Overlay -->
+    <div id="menuOverlay" class="menu-overlay" onclick="closeMenu()"></div>
+    
+    <!-- Side Menu -->
+    <div id="sideMenu" class="side-menu">
+        <button class="close-btn" onclick="closeMenu()">&times;</button>
+        <a href="ads.html" class="menu-item">🎬 Watch Ads & Earn</a>
+        <a href="withdraw.html" class="menu-item">💸 Withdraw Funds</a>
+        <a href="payment.html" class="menu-item">💳 Deposit / Invest</a>
+        <a href="login.html" class="menu-item" style="color: var(--danger);">🚪 Logout</a>
+    </div>
+
     <header>
         <div class="logo" style="margin:0;">NovaVest</div>
-        <div style="display: flex; align-items: center; gap: 15px; font-weight: 600;">
-            <span id="userName">Loading...</span>
-            <a href="login.html" class="btn-logout">Logout</a>
+        <div class="header-nav">
+            <span id="userName" style="font-weight: 600;">Loading...</span>
+            <button class="hamburger-btn" onclick="openMenu()">☰</button>
         </div>
     </header>
+    
     <div class="container">
         <div class="glass-card quote-box">"Your journey to financial freedom starts here. Smart investments, steady growth."</div>
         
@@ -98,7 +111,12 @@
                 });
             }
         });
+        
         function copyRef() { navigator.clipboard.writeText(document.getElementById('refLink').value); alert("Copied!"); }
+        
+        // Hamburger Menu Functions
+        function openMenu() { document.getElementById("sideMenu").classList.add("open"); document.getElementById("menuOverlay").classList.add("show"); }
+        function closeMenu() { document.getElementById("sideMenu").classList.remove("open"); document.getElementById("menuOverlay").classList.remove("show"); }
     </script>
 </body>
 </html>
