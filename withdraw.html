@@ -8,7 +8,7 @@
     <style>
         .glass-container { max-width: 450px; }
         .balance-display { text-align: center; font-size: 16px; margin-bottom: 15px; padding: 12px; background: rgba(187, 134, 252, 0.05); border: 1px solid rgba(187, 134, 252, 0.2); border-radius: 8px; color: var(--neon-main); font-weight: bold; }
-        .min-text { font-size: 14px; color: var(--danger); text-align: center; margin-bottom: 15px; }
+        .min-text { font-size: 14px; color: var(--danger); text-align: center; margin-bottom: 20px; font-weight: 600; }
     </style>
 </head>
 <body style="padding: 20px;">
@@ -17,13 +17,15 @@
         <h2>Request Withdrawal</h2>
         <div class="balance-display">Available Balance: <span id="currentBalanceDisplay">₦0.00</span></div>
         <p class="min-text" id="minWithdrawText">* Calculating minimum withdrawal...</p>
+        
         <form id="withdrawForm">
-            <div class="form-group"><label>Amount to Withdraw (₦):</label><input type="number" id="amount" required></div>
-            <div class="form-group"><label>Bank Name:</label><input type="text" id="bank" required></div>
-            <div class="form-group"><label>Account Number:</label><input type="text" id="accountNumber" required></div>
-            <div class="form-group"><label>Account Name:</label><input type="text" id="accountName" required></div>
-            <button type="submit" class="btn">Submit Request</button>
+            <div class="form-group"><label>Amount to Withdraw (₦):</label><input type="number" id="amount" placeholder="Enter amount" required></div>
+            <div class="form-group"><label>Bank Name:</label><input type="text" id="bank" placeholder="e.g. OPay, GTBank" required></div>
+            <div class="form-group"><label>Account Number:</label><input type="text" id="accountNumber" placeholder="10-digit account number" required></div>
+            <div class="form-group"><label>Account Name:</label><input type="text" id="accountName" placeholder="Enter your account name" required></div>
+            <button type="submit" class="btn" style="margin-top: 10px;">Submit Withdrawal Request</button>
         </form>
+        
         <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
     </div>
 
@@ -42,9 +44,12 @@
             let safeEmail = user.email.replace(/\./g, ',');
             db.ref('users/' + safeEmail).on('value', snap => {
                 let data = snap.val();
-                currentBalance = data.balance || 0; userTier = parseFloat(data.tier) || 0;
-                document.getElementById('currentBalanceDisplay').innerText = '₦' + currentBalance.toLocaleString();
-                document.getElementById('minWithdrawText').innerText = `* Minimum withdrawal is ₦${(userTier * 2).toLocaleString()}`;
+                if(data) {
+                    currentBalance = data.balance || 0; 
+                    userTier = parseFloat(data.tier) || 0;
+                    document.getElementById('currentBalanceDisplay').innerText = '₦' + currentBalance.toLocaleString();
+                    document.getElementById('minWithdrawText').innerText = `* Minimum withdrawal is ₦${(userTier * 2).toLocaleString()}`;
+                }
             });
         });
 
