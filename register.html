@@ -5,25 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVest - Register</title>
     <style>
+        :root {
+            --neon-green: #00ff9d;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #a0b3a8;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f8f6; color: #1a1a1a; padding: 20px; }
-        header { text-align: center; margin-bottom: 30px; }
-        .logo { font-size: 32px; font-weight: 800; color: #00a86b; }
-        .form-container { max-width: 420px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #00a86b; }
-        h2 { text-align: center; color: #1a1a1a; margin-top: 0; }
+        
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(rgba(0, 10, 5, 0.85), rgba(0, 20, 10, 0.95)), url('https://z-cdn-media.chatglm.cn/files/30f841e2-4ea1-4faf-92ad-2d6414f456fc.png?auth_key=1885159136-9a4e205a52a1464fa2bf77391a919237-0-3ee60c15e334df9b53f98c4d12ca888e') no-repeat center center fixed; 
+            background-size: cover;
+            color: var(--text-main); 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .logo { font-size: 32px; font-weight: 800; color: var(--neon-green); text-shadow: 0 0 15px rgba(0, 255, 157, 0.4); margin-bottom: 20px; }
+
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px) saturate(150%);
+            -webkit-backdrop-filter: blur(24px) saturate(150%);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 { text-align: center; color: var(--text-main); margin-bottom: 25px; }
         .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
-        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        input:focus { border-color: #00a86b; outline: none; }
-        .btn { width: 100%; background-color: #00a86b; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 16px; }
-        .btn:hover { background-color: #007a4d; }
-        .login-link { text-align: center; margin-top: 15px; font-size: 14px; color: #666; }
-        .login-link a { color: #00a86b; font-weight: 700; text-decoration: none; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted); font-size: 14px; }
+        input { 
+            width: 100%; padding: 12px; border-radius: 8px; font-size: 16px; 
+            background: rgba(0, 0, 0, 0.3); 
+            border: 1px solid var(--glass-border); 
+            color: var(--text-main); 
+            transition: 0.2s;
+        }
+        input:focus { border-color: var(--neon-green); outline: none; box-shadow: 0 0 10px rgba(0, 255, 157, 0.2); }
+        .btn { width: 100%; background: var(--neon-green); color: #000; padding: 14px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 16px; transition: 0.2s; margin-top: 10px; }
+        .btn:hover { box-shadow: 0 0 20px rgba(0, 255, 157, 0.4); }
+        .links { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted); }
+        .links a { color: var(--neon-green); font-weight: 700; text-decoration: none; }
     </style>
 </head>
 <body>
-    <header><div class="logo">NovaVest</div></header>
-    <div class="form-container">
+    <div class="logo">NovaVest</div>
+    <div class="glass-container">
         <h2>Create Your Account</h2>
         <form id="registerForm">
             <div class="form-group">
@@ -36,14 +73,13 @@
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Create a strong password" required>
+                <input type="password" id="password" placeholder="Create a strong password (min 6 chars)" required>
             </div>
             <button type="submit" class="btn">Create Account</button>
         </form>
-        <div class="login-link">Already have an account? <a href="login.html">Login here</a></div>
+        <div class="links">Already have an account? <a href="login.html">Login here</a></div>
     </div>
 
-    <!-- Firebase Connections -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -69,14 +105,11 @@
             let password = document.getElementById('password').value;
             let safeEmail = email.replace(/\./g, ',');
 
-            // Check URL to see if someone referred them
             const urlParams = new URLSearchParams(window.location.search);
             let referrer = urlParams.get('ref') || "None";
             
-            // 1. Create user with Firebase Authentication
             auth.createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                // 2. Save user data to Realtime Database
                 db.ref('users/' + safeEmail).set({
                     fullname: name,
                     email: email,
@@ -86,7 +119,6 @@
                 }).then(() => {
                     localStorage.setItem('novavestUser', name);
                     localStorage.setItem('novavestEmail', email);
-                    alert("Account created successfully! Welcome to NovaVest.");
                     window.location.href = "dashboard.html";
                 });
             })
