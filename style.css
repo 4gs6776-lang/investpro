@@ -1,13 +1,14 @@
 /* NOVAVEST MASTER STYLESHEET */
 :root {
-    --neon-main: #00ff9d; /* Neon Green */
+    --neon-main: #00ff9d; /* Neon Green from your image */
     --neon-glow: rgba(0, 255, 157, 0.4);
     --gold-accent: #ffd700;
     --bg-dark: #021109; /* Deep dark green/black */
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    /* Changed glass to DARK GREEN instead of white so it blends perfectly */
+    --glass-bg: rgba(2, 30, 18, 0.6); 
+    --glass-border: rgba(0, 255, 157, 0.15);
     --text-main: #ffffff;
-    --text-muted: #a0b3a8;
+    --text-muted: #8a9b94;
     --danger: #ff4d4d;
 }
 
@@ -15,19 +16,19 @@
 
 body { 
     font-family: 'Segoe UI', Roboto, sans-serif; 
-    /* Lighter overlay (0.4 and 0.6) so your image is clearly visible! */
-    background: linear-gradient(rgba(2, 17, 9, 0.4), rgba(0, 20, 10, 0.6)), url('images/NovaVest-promo.png') no-repeat center center fixed; 
+    /* Your exact image with a lighter dark green overlay so the image shows through */
+    background: linear-gradient(rgba(2, 17, 9, 0.75), rgba(0, 20, 10, 0.85)), url('images/NovaVest-promo.png') no-repeat center center fixed; 
     background-size: cover;
     color: var(--text-main); 
     min-height: 100vh;
     line-height: 1.5;
 }
 
-/* Universal Glass Cards */
+/* Universal Glass Cards (Now Dark Green to match the image) */
 .glass-card, .glass-container {
     background: var(--glass-bg);
-    backdrop-filter: blur(24px) saturate(150%);
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(16px) saturate(120%);
+    -webkit-backdrop-filter: blur(16px) saturate(120%);
     border: 1px solid var(--glass-border);
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
@@ -41,7 +42,7 @@ body {
 .btn-choose { background: var(--neon-main); color: #000; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 800; display: block; text-align: center; margin-top: 15px; }
 
 /* Inputs */
-input, select { width: 100%; padding: 12px; border-radius: 8px; font-size: 16px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); color: var(--text-main); transition: 0.2s; }
+input, select { width: 100%; padding: 12px; border-radius: 8px; font-size: 16px; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); color: var(--text-main); transition: 0.2s; }
 input:focus, select:focus { border-color: var(--neon-main); outline: none; box-shadow: 0 0 10px var(--neon-glow); }
 input option { color: black; }
 
