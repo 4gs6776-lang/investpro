@@ -16,7 +16,7 @@
 body { 
     font-family: 'Segoe UI', Roboto, sans-serif; 
     /* The exact overlay colors you wanted (0.85 and 0.95) using your permanent image file */
-    background: linear-gradient(rgba(0, 10, 5, 0.85), rgba(0, 20, 10, 0.95)), url('images/NovaVest-promo.png') no-repeat center center fixed; 
+    background: linear-gradient(rgba(0, 10, 5, 0.85), rgba(0, 20, 10, 0.95)), url('bg.png') no-repeat center center fixed; 
     background-size: cover;
     color: var(--text-main); 
     min-height: 100vh;
