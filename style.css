@@ -1,9 +1,9 @@
 /* NOVAVEST MASTER STYLESHEET */
 :root {
-    --neon-main: #00ff9d; /* Neon Green */
+    --neon-main: #00ff9d;
     --neon-glow: rgba(0, 255, 157, 0.4);
     --gold-accent: #ffd700;
-    --bg-dark: #021109; /* Deep dark green/black */
+    --bg-dark: #021109;
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
     --text-main: #ffffff;
@@ -13,17 +13,23 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body { 
-    font-family: 'Segoe UI', Roboto, sans-serif; 
-    /* The exact overlay colors you wanted (0.85 and 0.95) using your permanent image file */
+/* APPLY BACKGROUND TO HTML TO COVER THE BROWSER'S WHITE OVERSCROLL */
+html { 
+    height: 100%;
     background: linear-gradient(rgba(0, 10, 5, 0.85), rgba(0, 20, 10, 0.95)), url('bg.png') no-repeat center center fixed; 
     background-size: cover;
+    background-color: #021109; /* Deep dark green fallback */
+}
+
+body { 
+    font-family: 'Segoe UI', Roboto, sans-serif; 
+    background: transparent; /* Body is transparent so html shows through */
     color: var(--text-main); 
-    min-height: 100vh;
+    min-height: 100%;
     line-height: 1.5;
 }
 
-/* Universal Glass Cards (White frosted glass exactly like your code) */
+/* Universal Glass Cards */
 .glass-card, .glass-container {
     background: var(--glass-bg);
     backdrop-filter: blur(24px) saturate(150%);
