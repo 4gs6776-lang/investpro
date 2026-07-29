@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaVest - About Us</title>
+    <meta name="theme-color" content="#021109">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .about-container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        .about-hero-img { width: 100%; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); border: 1px solid var(--glass-border); margin-bottom: 30px; }
+        .about-text { text-align: center; padding: 30px; margin-bottom: 30px; }
+        .about-text h2 { color: var(--neon-main); font-size: 28px; margin-bottom: 15px; }
+        .about-text p { color: var(--text-muted); font-size: 16px; line-height: 1.6; margin-bottom: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 40px; }
+        .stat-box { padding: 20px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: 800; color: var(--neon-main); margin-bottom: 5px; }
+        .stat-label { font-size: 14px; color: var(--text-muted); text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <header style="background: rgba(2, 17, 9, 0.6); backdrop-filter: blur(20px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--glass-border);">
+        <div class="logo" style="margin:0;">NovaVest</div>
+        <a href="index.html" class="btn-logout">Home</a>
+    </header>
+
+    <div class="about-container">
+        <!-- Your Uploaded Image -->
+        <img src="about-image.png" alt="NovaVest Investment Platform" class="about-hero-img">
+
+        <div class="glass-card about-text">
+            <h2>Smart Investment. Stronger Future.</h2>
+            <p>Welcome to NovaVest. We are a modern digital rewards and financial engagement platform designed to create opportunities for our community through innovative online activities. We believe that financial growth should be built on clear rules, accountability, and sustainable practices.</p>
+            <p>Our mission is to provide a premium digital platform that combines innovation, security, and convenience while fostering a strong community of engaged members. With NovaVest, you can confidently participate, monitor your progress, and achieve your financial goals.</p>
+        </div>
+
+        <!-- Stats Section from your image -->
+        <div class="stats-grid">
+            <div class="glass-card stat-box">
+                <div class="stat-number">10K+</div>
+                <div class="stat-label">Active Investors</div>
+            </div>
+            <div class="glass-card stat-box">
+                <div class="stat-number">₦2.5B+</div>
+                <div class="stat-label">Total Payouts</div>
+            </div>
+            <div class="glass-card stat-box">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Customer Trust</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 40px;">
+            <a href="register.html" class="btn" style="max-width: 300px; margin: 0 auto;">Join NovaVest Today</a>
+        </div>
+    </div>
+</body>
+</html>
