@@ -2,25 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NovaVest - About Us</title>
     <meta name="theme-color" content="#021109">
     <link rel="stylesheet" href="style.css">
     <style>
-        .about-container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
-        .about-hero-img { width: 100%; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); border: 1px solid var(--glass-border); margin-bottom: 30px; }
-        .about-text { text-align: center; padding: 30px; margin-bottom: 30px; }
-        .about-text h2 { color: var(--neon-main); font-size: 28px; margin-bottom: 15px; }
-        .about-text p { color: var(--text-muted); font-size: 16px; line-height: 1.6; margin-bottom: 20px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 40px; }
-        .stat-box { padding: 20px; text-align: center; }
-        .stat-number { font-size: 28px; font-weight: 800; color: var(--neon-main); margin-bottom: 5px; }
-        .stat-label { font-size: 14px; color: var(--text-muted); text-transform: uppercase; }
+        /* Mobile-First Responsive Layout */
+        .about-container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+        
+        .about-hero-img { 
+            width: 100%; 
+            height: auto; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5); 
+            border: 1px solid var(--glass-border); 
+            margin-bottom: 20px; 
+            display: block;
+        }
+        
+        .about-text { 
+            text-align: center; 
+            padding: 25px 20px; 
+            margin-bottom: 20px; 
+        }
+        .about-text h2 { color: var(--neon-main); font-size: 24px; margin-bottom: 15px; }
+        .about-text p { color: var(--text-muted); font-size: 15px; line-height: 1.6; margin-bottom: 15px; }
+        
+        /* Responsive Stats Grid */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 30px; 
+        }
+        .stat-box { 
+            padding: 20px 10px; 
+            text-align: center; 
+        }
+        .stat-number { font-size: 24px; font-weight: 800; color: var(--neon-main); margin-bottom: 5px; }
+        .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
+        
+        .about-cta { text-align: center; margin-bottom: 40px; padding: 0 20px; }
     </style>
 </head>
 <body>
+    <!-- Clean Header -->
     <header style="background: rgba(2, 17, 9, 0.6); backdrop-filter: blur(20px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--glass-border);">
-        <div class="logo" style="margin:0;">NovaVest</div>
+        <div class="logo" style="margin:0; font-size: 22px;">NovaVest</div>
         <a href="index.html" class="btn-logout">Home</a>
     </header>
 
@@ -34,7 +62,7 @@
             <p>Our mission is to provide a premium digital platform that combines innovation, security, and convenience while fostering a strong community of engaged members. With NovaVest, you can confidently participate, monitor your progress, and achieve your financial goals.</p>
         </div>
 
-        <!-- Stats Section from your image -->
+        <!-- Stats Section -->
         <div class="stats-grid">
             <div class="glass-card stat-box">
                 <div class="stat-number">10K+</div>
@@ -50,7 +78,7 @@
             </div>
         </div>
 
-        <div style="text-align: center; margin-bottom: 40px;">
+        <div class="about-cta">
             <a href="register.html" class="btn" style="max-width: 300px; margin: 0 auto;">Join NovaVest Today</a>
         </div>
     </div>
