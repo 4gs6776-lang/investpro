@@ -24,9 +24,8 @@
         <h2>Watch & Earn</h2>
         
         <div class="video-wrapper">
-            <!-- THIS NOW POINTS TO YOUR UPLOADED VIDEO (ad1.mp4) -->
             <video id="adVideo" playsinline controls>
-                <source src="ad1.mp4" type="video/mp4">
+                <source id="videoSource" src="" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </div>
@@ -35,6 +34,117 @@
         <div class="warning-text" id="warningText">▶️ Please tap play and watch the video.</div>
         
         <div class="timer" id="timerDisplay">10</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        
+        <button id="claimBtn" class="btn hidden-btn" onclick="claimReward()">Claim ₦50</button>
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyDnCejfQcvxQjcb3JESNPvZJpGgwbZy9bY", authDomain: "novavest-58ae5.firebaseapp.com", databaseURL: "https://novavest-58ae5-default-rtdb.firebaseio.com/", projectId: "novavest-58ae5", storageBucket: "novavest-58ae5.firebasestorage.app", messagingSenderId: "596912273946", appId: "1:596912273946:web:50fdb479fbc088a9392fa3" };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        auth.onAuthStateChanged(user => {
+            if (!user) { window.location.href = "login.html"; return; }
+            let safeEmail = user.email.replace(/\./g, ',');
+            db.ref('users/' + safeEmail).once('value').then(snap => {
+                let userData = snap.val();
+                if (!userData || !userData.tier || userData.tier === "None") { window.location.href = "payment.html"; } 
+                else if (userData.paymentStatus === "Pending") { window.location.href = "dashboard.html"; }
+            });
+        });
+
+        const video = document.getElementById('adVideo');
+        const videoSource = document.getElementById('videoSource');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const claimBtn = document.getElementById('claimBtn');
+        const progressFill = document.getElementById('progressFill');
+        const warningText = document.getElementById('warningText');
+        
+        // ==========================================
+        // 48-HOUR AUTOMATIC VIDEO ROTATION LOGIC
+        // ==========================================
+        function getCurrentAdVideo() {
+            const now = Date.now();
+            const fortyEightHoursInMs = 48 * 60 * 60 * 1000;
+            
+            // Calculate which 48-hour cycle we are currently in
+            const cycleNumber = Math.floor(now / fortyEightHoursInMs);
+            
+            // We have 3 videos (ad1, ad2, ad3). This math cycles through them.
+            const totalVideos = 3; 
+            const currentVideoIndex = (cycleNumber % totalVideos) + 1;
+            
+            return `ad${currentVideoIndex}.mp4`;
+        }
+
+        // Set the video source and load it
+        videoSource.src = getCurrentAdVideo();
+        video.load();
+
+        // Try to autoplay
+        video.play().catch(() => {
+            warningText.style.display = 'block';
+            warningText.innerText = "▶️ Please tap the play button to start the video.";
+        });
+
+        video.ontimeupdate = function() {
+            let timeWatched = video.currentTime;
+            let totalDuration = video.duration || 15;
+            let remaining = Math.max(0, Math.ceil(totalDuration - timeWatched));
+            
+            timerDisplay.innerText = remaining;
+            let percent = (timeWatched / totalDuration) * 100;
+            progressFill.style.width = Math.min(100, percent) + '%';
+
+            if (timeWatched >= totalDuration - 0.5) {
+                video.pause();
+                video.currentTime = totalDuration;
+                timerDisplay.innerText = "Done!";
+                progressFill.style.width = '100%';
+                warningText.style.display = 'none';
+                
+                claimBtn.classList.remove('hidden-btn');
+                claimBtn.classList.add('visible-btn');
+            }
+        };
+
+        video.onpause = function() {
+            if (video.currentTime < video.duration - 0.5) {
+                warningText.style.display = 'block';
+                warningText.innerText = "⏸️ Video Paused! Resume watching to earn your reward.";
+                progressFill.style.background = 'var(--danger)';
+            }
+        };
+
+        video.onplay = function() {
+            if (video.currentTime < video.duration - 0.5) {
+                warningText.style.display = 'none';
+                progressFill.style.background = 'var(--neon-main)';
+            }
+        };
+
+        function claimReward() {
+            let user = auth.currentUser; 
+            if(user) {
+                let safeEmail = user.email.replace(/\./g, ',');
+                db.ref('users/' + safeEmail).once('value').then(snap => {
+                    let newBalance = (snap.val().balance || 0) + 50;
+                    db.ref('users/' + safeEmail).update({ balance: newBalance }).then(() => {
+                        alert("Success! You earned ₦50.00");
+                        window.location.href = "dashboard.html";
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>        <div class="timer" id="timerDisplay">10</div>
         <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         
         <button id="claimBtn" class="btn hidden-btn" onclick="claimReward()">Claim ₦50</button>
