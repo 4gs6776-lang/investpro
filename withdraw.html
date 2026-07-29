@@ -48,8 +48,6 @@
                     currentBalance = data.balance || 0; 
                     userTier = parseFloat(data.tier) || 0;
                     document.getElementById('currentBalanceDisplay').innerText = '₦' + currentBalance.toLocaleString();
-                    
-                    // UPDATED MATH: 3x the registration tier
                     let minWithdrawal = userTier * 3; 
                     document.getElementById('minWithdrawText').innerText = `* Minimum withdrawal is ₦${minWithdrawal.toLocaleString()}`;
                 }
@@ -59,8 +57,6 @@
         document.getElementById('withdrawForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
             let requestedAmount = parseFloat(document.getElementById('amount').value);
-            
-            // UPDATED MATH: 3x the registration tier
             let minWithdrawal = userTier * 3; 
             
             if (requestedAmount > currentBalance) { alert("Error: Insufficient balance."); } 
@@ -69,7 +65,8 @@
                 let user = auth.currentUser; let safeEmail = user.email.replace(/\./g, ',');
                 db.ref('users/' + safeEmail).update({ balance: currentBalance - requestedAmount }).then(() => {
                     db.ref('withdrawals').push({ userEmail: user.email, userSafeEmail: safeEmail, amount: requestedAmount, bank: document.getElementById('bank').value, accNum: document.getElementById('accountNumber').value, accName: document.getElementById('accountName').value, status: "Pending" }).then(() => {
-                        alert("Withdrawal Pending Admin Approval!");
+                        // NEW MESSAGE: Telling them to wait for Admin approval
+                        alert("Withdrawal request submitted successfully! Please wait for Admin approval. Once approved, your money will reflect in your bank account within 72 hours.");
                         window.location.href = "dashboard.html";
                     });
                 });
