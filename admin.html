@@ -15,8 +15,6 @@
         .btn-approve { background: var(--neon-main); color: #000; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 12px; margin-bottom: 5px; }
         .btn-reject { background: rgba(255, 77, 77, 0.2); color: var(--danger); border: 1px solid rgba(255, 77, 77, 0.3); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px; }
         .empty-msg { text-align: center; color: var(--text-muted); font-style: italic; padding: 30px; }
-        
-        /* ROI Section Styles */
         .roi-section { text-align: center; margin-bottom: 20px; }
         .roi-btn { background: var(--gold-accent); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 16px; width: 100%; transition: 0.2s; margin-top: 10px; }
         .roi-btn:hover { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
@@ -74,13 +72,9 @@
                 let newBal = (snap.val().balance || 0) + parseInt(tierAmount);
                 db.ref('users/' + emailKey).update({ tier: tierAmount, paymentStatus: "Approved", balance: newBal }).then(() => {
                     alert("Activated! Balance updated.");
-                    
-                    // UPDATED REFERRAL BONUS: Now ₦300
                     if (referrer && referrer !== "None") {
                         db.ref('users/' + referrer).once('value').then(rSnap => {
-                            if(rSnap.val()) { 
-                                db.ref('users/' + referrer).update({ balance: (rSnap.val().balance || 0) + 300 }).then(() => alert("Referral Bonus of ₦300 given to referrer!")); 
-                            }
+                            if(rSnap.val()) { db.ref('users/' + referrer).update({ balance: (rSnap.val().balance || 0) + 300 }).then(() => alert("Referral Bonus of ₦300 given to referrer!")); }
                         });
                     }
                 });
@@ -93,51 +87,41 @@
                 let r = w[key];
                 if (r.status === "Pending") {
                     has = true;
-                    body.innerHTML += `<tr><td style="font-weight:800;color:var(--neon-main);">₦${r.amount.toLocaleString()}</td><td>${r.bank}</td><td>${r.accNum}</td><td>${r.accName}</td><td><button class="btn-approve" onclick="approveW('${key}')">Approve</button><button class="btn-reject" onclick="rejectW('${key}', '${r.userSafeEmail}', ${r.amount})">Reject</button></td></tr>`;
+                    body.innerHTML += `<tr><td style="font-weight:800;color:var(--neon-main);">₦${r.amount.toLocaleString()}</td><td>${r.bank}</td><td>${r.accNum}</td><td>${r.accName}</td><td><button class="btn-approve" onclick="approveW('${key}', '${r.userSafeEmail}')">Approve</button><button class="btn-reject" onclick="rejectW('${key}', '${r.userSafeEmail}', ${r.amount})">Reject</button></td></tr>`;
                 }
             }
             if(!has) body.innerHTML = '<tr><td colspan="5" class="empty-msg">No pending withdrawals.</td></tr>';
         });
 
-        function approveW(k) { db.ref('withdrawals/' + k).remove().then(() => alert("Approved!")); }
+        // UPDATED APPROVE WITHDRAWAL LOGIC
+        function approveW(k, email) {
+            if (confirm("Approve this withdrawal? The user will be notified that their money will arrive in 72 hours.")) {
+                // 1. Put a flag on the user's account so their dashboard shows the 72-hour popup
+                db.ref('users/' + email).update({ withdrawalApproved: true }).then(() => {
+                    // 2. Remove the withdrawal request from the admin panel
+                    db.ref('withdrawals/' + k).remove().then(() => alert("Withdrawal Approved! User will see the 72-hour notification."));
+                });
+            }
+        }
+
         function rejectW(k, email, amt) { db.ref('users/' + email).once('value').then(s => { db.ref('users/' + email).update({ balance: (s.val().balance || 0) + amt }).then(() => { db.ref('withdrawals/' + k).remove().then(() => alert("Rejected! Money returned.")); }); }); }
 
-        // DAILY ROI LOGIC
         function processDailyROI() {
-            if (!confirm("Are you sure you want to trigger the Daily ROI Payout for ALL active users?")) return;
-            
-            let roiBtn = document.getElementById('roiBtn');
-            roiBtn.disabled = true;
-            roiBtn.innerText = "Processing Payouts...";
-
+            if (!confirm("Trigger Daily ROI Payout for ALL active users?")) return;
+            let roiBtn = document.getElementById('roiBtn'); roiBtn.disabled = true; roiBtn.innerText = "Processing...";
             db.ref('users').once('value').then(snap => {
-                let users = snap.val();
-                let updates = {};
-                let processedCount = 0;
-
+                let users = snap.val(); let updates = {}; let count = 0;
                 for (let key in users) {
                     let u = users[key];
                     if (u.paymentStatus === "Approved" && u.tier && u.tier !== "None") {
-                        let tierAmount = parseFloat(u.tier);
-                        let roiPercentage = 0;
-
-                        if (tierAmount >= 1000 && tierAmount <= 4000) roiPercentage = 0.05;      // 5%
-                        else if (tierAmount >= 5000 && tierAmount <= 49000) roiPercentage = 0.08; // 8%
-                        else if (tierAmount >= 50000) roiPercentage = 0.12;                       // 12%
-
-                        let profit = tierAmount * roiPercentage;
-                        let newBalance = (u.balance || 0) + profit;
-                        
-                        updates['users/' + key + '/balance'] = newBalance;
-                        processedCount++;
+                        let tierAmount = parseFloat(u.tier); let roi = 0;
+                        if (tierAmount >= 1000 && tierAmount <= 4000) roi = 0.05;
+                        else if (tierAmount >= 5000 && tierAmount <= 49000) roi = 0.08;
+                        else if (tierAmount >= 50000) roi = 0.12;
+                        updates['users/' + key + '/balance'] = (u.balance || 0) + (tierAmount * roi); count++;
                     }
                 }
-
-                db.ref().update(updates).then(() => {
-                    alert("Success! Daily ROI has been paid to " + processedCount + " active users.");
-                    roiBtn.disabled = false;
-                    roiBtn.innerText = "Trigger Daily ROI Payout";
-                });
+                db.ref().update(updates).then(() => { alert("Success! Daily ROI paid to " + count + " users."); roiBtn.disabled = false; roiBtn.innerText = "Trigger Daily ROI Payout"; });
             });
         }
     </script>
