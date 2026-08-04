@@ -25,7 +25,7 @@
 <body style="padding: 15px;">
     <header>
         <div class="logo" style="margin:0;">NovaVest Admin Panel</div>
-        <a href="admin-login.html" class="btn-logout">Logout</a>
+        <button class="btn-logout" id="logoutBtn">Logout</button>
     </header>
 
     <div class="glass-card container roi-section">
@@ -44,28 +44,58 @@
         <table><thead><tr><th>Amount</th><th>Bank</th><th>Acc Num</th><th>Acc Name</th><th>Action</th></tr></thead><tbody id="requestTableBody"></tbody></table>
     </div>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('auth') !== 'success') { window.location.href = "admin-login.html"; }
-    </script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDnCejfQcvxQjcb3JESNPvZJpGgwbZy9bY", authDomain: "novavest-58ae5.firebaseapp.com", databaseURL: "https://novavest-58ae5-default-rtdb.firebaseio.com/", projectId: "novavest-58ae5", storageBucket: "novavest-58ae5.firebasestorage.app", messagingSenderId: "596912273946", appId: "1:596912273946:web:50fdb479fbc088a9392fa3" };
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.database();
 
-        db.ref('users').on('value', snap => {
-            let users = snap.val(); let body = document.getElementById('pendingPaymentsBody'); body.innerHTML = ''; let has = false;
-            for (let key in users) {
-                let u = users[key];
-                if (u.paymentStatus === "Pending") {
-                    has = true; let ref = u.referredBy && u.referredBy !== "None" ? u.referredBy.replace(/,/g, '.') : "None";
-                    body.innerHTML += `<tr><td>${u.fullname}</td><td>${u.email}</td><td style="font-weight:800;color:var(--neon-main);">₦${parseInt(u.requestedTier).toLocaleString()}</td><td>${ref}</td><td><button class="btn-approve" onclick="approvePayment('${key}', '${u.requestedTier}', '${u.referredBy}')">Approve</button></td></tr>`;
-                }
+        // Check if Admin is logged in via Firebase Auth
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
+                window.location.href = "admin-login.html";
+            } else if (user.email !== 'goodnews@gmail.com') {
+                alert("You are not authorized to view this page.");
+                auth.signOut();
+                window.location.href = "index.html";
+            } else {
+                // Admin is verified, load the data
+                loadData();
             }
-            if(!has) body.innerHTML = '<tr><td colspan="5" class="empty-msg">No pending payments.</td></tr>';
         });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            auth.signOut().then(() => window.location.href = "admin-login.html");
+        });
+
+        function loadData() {
+            db.ref('users').on('value', snap => {
+                let users = snap.val(); let body = document.getElementById('pendingPaymentsBody'); body.innerHTML = ''; let has = false;
+                for (let key in users) {
+                    let u = users[key];
+                    if (u.paymentStatus === "Pending") {
+                        has = true; let ref = u.referredBy && u.referredBy !== "None" ? u.referredBy.replace(/,/g, '.') : "None";
+                        body.innerHTML += `<tr><td>${u.fullname}</td><td>${u.email}</td><td style="font-weight:800;color:var(--neon-main);">₦${parseInt(u.requestedTier).toLocaleString()}</td><td>${ref}</td><td><button class="btn-approve" onclick="approvePayment('${key}', '${u.requestedTier}', '${u.referredBy}')">Approve</button></td></tr>`;
+                    }
+                }
+                if(!has) body.innerHTML = '<tr><td colspan="5" class="empty-msg">No pending payments.</td></tr>';
+            });
+
+            db.ref('withdrawals').on('value', snap => {
+                let w = snap.val(); let body = document.getElementById('requestTableBody'); body.innerHTML = ''; let has = false;
+                for (let key in w) {
+                    let r = w[key];
+                    if (r.status === "Pending") {
+                        has = true;
+                        body.innerHTML += `<tr><td style="font-weight:800;color:var(--neon-main);">₦${r.amount.toLocaleString()}</td><td>${r.bank}</td><td>${r.accNum}</td><td>${r.accName}</td><td><button class="btn-approve" onclick="approveW('${key}', '${r.userSafeEmail}')">Approve</button><button class="btn-reject" onclick="rejectW('${key}', '${r.userSafeEmail}', ${r.amount})">Reject</button></td></tr>`;
+                    }
+                }
+                if(!has) body.innerHTML = '<tr><td colspan="5" class="empty-msg">No pending withdrawals.</td></tr>';
+            });
+        }
 
         function approvePayment(emailKey, tierAmount, referrer) {
             db.ref('users/' + emailKey).once('value').then(snap => {
@@ -81,24 +111,9 @@
             });
         }
 
-        db.ref('withdrawals').on('value', snap => {
-            let w = snap.val(); let body = document.getElementById('requestTableBody'); body.innerHTML = ''; let has = false;
-            for (let key in w) {
-                let r = w[key];
-                if (r.status === "Pending") {
-                    has = true;
-                    body.innerHTML += `<tr><td style="font-weight:800;color:var(--neon-main);">₦${r.amount.toLocaleString()}</td><td>${r.bank}</td><td>${r.accNum}</td><td>${r.accName}</td><td><button class="btn-approve" onclick="approveW('${key}', '${r.userSafeEmail}')">Approve</button><button class="btn-reject" onclick="rejectW('${key}', '${r.userSafeEmail}', ${r.amount})">Reject</button></td></tr>`;
-                }
-            }
-            if(!has) body.innerHTML = '<tr><td colspan="5" class="empty-msg">No pending withdrawals.</td></tr>';
-        });
-
-        // UPDATED APPROVE WITHDRAWAL LOGIC
         function approveW(k, email) {
             if (confirm("Approve this withdrawal? The user will be notified that their money will arrive in 72 hours.")) {
-                // 1. Put a flag on the user's account so their dashboard shows the 72-hour popup
                 db.ref('users/' + email).update({ withdrawalApproved: true }).then(() => {
-                    // 2. Remove the withdrawal request from the admin panel
                     db.ref('withdrawals/' + k).remove().then(() => alert("Withdrawal Approved! User will see the 72-hour notification."));
                 });
             }
