@@ -17,12 +17,25 @@
         </form>
         <a href="index.html" class="back-link">← Back to Homepage</a>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script>
+        const firebaseConfig = { apiKey: "AIzaSyDnCejfQcvxQjcb3JESNPvZJpGgwbZy9bY", authDomain: "novavest-58ae5.firebaseapp.com", databaseURL: "https://novavest-58ae5-default-rtdb.firebaseio.com/", projectId: "novavest-58ae5", storageBucket: "novavest-58ae5.firebasestorage.app", messagingSenderId: "596912273946", appId: "1:596912273946:web:50fdb479fbc088a9392fa3" };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
         document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            if (document.getElementById('adminId').value === "goodnews@gmail.com" && document.getElementById('adminPass').value === "NovaVest123") {
-                window.location.href = "admin.html?auth=success";
-            } else { alert("Access Denied! Invalid credentials."); }
+            let email = document.getElementById('adminId').value;
+            let pass = document.getElementById('adminPass').value;
+            
+            // Log into Firebase Auth as the Admin
+            auth.signInWithEmailAndPassword(email, pass).then(() => {
+                window.location.href = "admin.html";
+            }).catch(() => {
+                alert("Access Denied! Invalid admin credentials.");
+            });
         });
     </script>
 </body>
